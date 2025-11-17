@@ -1,4 +1,4 @@
-namespace WinFormsApp1
+namespace PL_presentationsLager
 {
     internal static class Program
     {
