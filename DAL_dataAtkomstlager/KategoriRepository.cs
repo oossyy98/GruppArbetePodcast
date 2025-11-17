@@ -57,7 +57,10 @@ namespace DAL_dataAtkomstlager
             {
                 var filter = Builders<Kategori>.Filter.Eq(k => k.Id, uppdateradKategori.Id);
                 var resultat = await collection.ReplaceOneAsync(filter, uppdateradKategori);
-                return resultat.ModifiedCount > 0;
+
+                if (resultat.MatchedCount == 0) return false;
+                if(resultat.ModifiedCount == 0) return false;
+                return true;
             }
             catch
             {
@@ -71,7 +74,8 @@ namespace DAL_dataAtkomstlager
             {
                 var filter = Builders<Kategori>.Filter.Eq(k => k.Id, kategoriId);
                 var resultat = await collection.DeleteOneAsync(filter);
-                return resultat.DeletedCount > 0;
+                if (resultat.DeletedCount == 0) return false;
+                return true;
             }
             catch
             {
