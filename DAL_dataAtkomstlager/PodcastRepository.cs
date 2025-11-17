@@ -17,13 +17,7 @@ namespace DAL_dataAtkomstlager
         //CREATE
         public async Task AddAsync(Podcast podcast)
         {
-            try
-            {
-                await collection.InsertOneAsync(podcast);
-            }
-            catch
-            {
-            }
+            await collection.InsertOneAsync(podcast);    
         }
         //READ ALLA
         public async Task<List<Podcast>> GetAllAsync()

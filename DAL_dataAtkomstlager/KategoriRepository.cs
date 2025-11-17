@@ -16,13 +16,7 @@ namespace DAL_dataAtkomstlager
         //CREATE
         public async Task AddAsync(Kategori kategori)
         {
-            try
-            {
-                await collection.InsertOneAsync(kategori);
-            }
-            catch
-            {
-            }
+            await collection.InsertOneAsync(kategori);
         }
         //READ ALLA
         public async Task<List<Kategori>> GetAllAsync()
