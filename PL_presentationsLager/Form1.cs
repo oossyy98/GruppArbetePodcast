@@ -118,6 +118,9 @@ namespace PL_presentationsLager
                 }
 
                 MessageBox.Show("Podcast raderad!");
+
+                var lista = await podcastService.HamtaAllaPodcastsAsync();
+                dgvPodcasts.DataSource = lista;
             }
         }
 
@@ -187,6 +190,55 @@ namespace PL_presentationsLager
             lstKategorier.DataSource = lista;
             lstKategorier.DisplayMember = "Namn";
             lstKategorier.ValueMember = "Id";
+        }
+
+        private async void btnRaderaKategori_Click(object sender, EventArgs e)
+        {
+            if (lstKategorier.SelectedItem is Kategori kategori)
+            {
+                var allaPodcasts = await podcastService.HamtaAllaPodcastsAsync();
+                var antalPodcasts = allaPodcasts.Count(p => p.KategoriId == kategori.Id);
+                string meddelande;
+                if (antalPodcasts > 0)
+                {
+                    meddelande = $"Kategorin har {antalPodcasts} podcasts kopplade. Är du säker på att du vill radera kategorin?";
+                }
+                else
+                {
+                    meddelande = $"Är du säker på att du vill radera kategorin?";
+                }
+                var resultat = MessageBox.Show(meddelande, "Bekräfta radering", MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
+
+                if (resultat == DialogResult.Yes)
+                {
+                    // Om kategorin används, sätt alla podcasts till okategoriserade
+                    if (antalPodcasts > 0)
+                    {
+                        var berordaPodcasts = allaPodcasts.Where(p => p.KategoriId == kategori.Id).ToList();
+                        foreach (var podcast in berordaPodcasts)
+                        {
+                            podcast.KategoriId = null; // Sätt till okategoriserad
+                            await podcastService.UppdateraPodcastAsync(podcast);
+                        }
+                    }
+                    
+
+                    //raderar kategorin
+                    var fel = await kategoriService.RaderaKategoriAsync(kategori.Id);
+                    if (fel != null)
+                    {
+                        MessageBox.Show(fel);
+                        return;
+                    }
+                    MessageBox.Show("Kategori raderad!");
+                    await LaddaKategoriListaAsync();
+                    await LaddaKategorierAsync();
+                }
+            }
+            else
+            {
+                MessageBox.Show("Välj en kategori att radera.");
+            }
         }
     }
 }
