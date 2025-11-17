@@ -40,6 +40,24 @@ namespace DAL_dataAtkomstlager
                 Console.WriteLine ("Fel vid hämtning av RSS-flöde: " + ex.Message);
                 return new List<Avsnitt>();
             }
+
+        }
+
+        public async Task<string?> HamtaPodcastTitelFranRssAsync(string rssUrl)
+        {
+            try
+            {
+                using (var reader = XmlReader.Create(rssUrl))
+                {
+                    var feed = SyndicationFeed.Load(reader);
+                    return feed.Title.Text; //returna poddens titel
+                }
+            } 
+            catch (Exception ex)
+            {
+                Console.WriteLine("Fel vid hämtning" + ex.Message);
+                return null;
+            }
         }
     }
 }

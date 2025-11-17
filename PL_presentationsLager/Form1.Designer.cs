@@ -34,6 +34,7 @@
             btnHamtaKategorier = new Button();
             lstKategorier = new ListBox();
             panel1 = new Panel();
+            btnRaderaKategori = new Button();
             panel2 = new Panel();
             dgvPodcasts = new DataGridView();
             button3 = new Button();
@@ -50,7 +51,6 @@
             panel3 = new Panel();
             dgvAvsnitt = new DataGridView();
             button4 = new Button();
-            btnRaderaKategori = new Button();
             panel1.SuspendLayout();
             panel2.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)dgvPodcasts).BeginInit();
@@ -117,6 +117,16 @@
             panel1.Size = new Size(351, 378);
             panel1.TabIndex = 5;
             panel1.Paint += panel1_Paint;
+            // 
+            // btnRaderaKategori
+            // 
+            btnRaderaKategori.Location = new Point(248, 195);
+            btnRaderaKategori.Name = "btnRaderaKategori";
+            btnRaderaKategori.Size = new Size(100, 23);
+            btnRaderaKategori.TabIndex = 5;
+            btnRaderaKategori.Text = "Radera ";
+            btnRaderaKategori.UseVisualStyleBackColor = true;
+            btnRaderaKategori.Click += btnRaderaKategori_Click;
             // 
             // panel2
             // 
@@ -220,6 +230,7 @@
             txtPodcastUrl.Name = "txtPodcastUrl";
             txtPodcastUrl.Size = new Size(100, 23);
             txtPodcastUrl.TabIndex = 6;
+            txtPodcastUrl.TextChanged += txtPodcastUrl_TextChanged;
             // 
             // label3
             // 
@@ -272,16 +283,6 @@
             button4.Text = "Visa avsnitt";
             button4.UseVisualStyleBackColor = true;
             button4.Click += button4_Click;
-            // 
-            // btnRaderaKategori
-            // 
-            btnRaderaKategori.Location = new Point(248, 195);
-            btnRaderaKategori.Name = "btnRaderaKategori";
-            btnRaderaKategori.Size = new Size(100, 23);
-            btnRaderaKategori.TabIndex = 5;
-            btnRaderaKategori.Text = "Radera ";
-            btnRaderaKategori.UseVisualStyleBackColor = true;
-            btnRaderaKategori.Click += btnRaderaKategori_Click;
             // 
             // Form1
             // 
