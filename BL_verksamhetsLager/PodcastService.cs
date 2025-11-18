@@ -8,10 +8,32 @@ namespace BL_verksamhetsLager
     public class PodcastService
     {
         private readonly IRepository<Podcast> repository;
+        private readonly RssService rssService;
 
-        public PodcastService(IRepository<Podcast> repository)
+        public PodcastService(IRepository<Podcast> repository, RssService rssService)
         {
             this.repository = repository;
+            this.rssService = rssService;
+        }
+
+        public async Task<Podcast> LasInRssAsync(string url)
+        {
+            if (string.IsNullOrWhiteSpace(url))
+            {
+                return null;
+            }
+
+            var titel = await rssService.HamtaPodcastTitelFranRssAsync(url);
+            var avsnitt = await rssService.HamtaAvsnittFranRssAsync(url);
+
+            if (titel == null) return null;
+
+            return new Podcast
+            {
+                Namn = titel,
+                Url = url,
+                Avsnitt = avsnitt
+            };
         }
 
         // CREATE

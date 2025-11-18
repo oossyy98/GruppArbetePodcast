@@ -37,7 +37,7 @@
             btnRaderaKategori = new Button();
             panel2 = new Panel();
             dgvPodcasts = new DataGridView();
-            button3 = new Button();
+            btnHamtaRss = new Button();
             button2 = new Button();
             button1 = new Button();
             btnHamtaAllaPodcasts = new Button();
@@ -130,8 +130,7 @@
             // 
             // panel2
             // 
-            panel2.Controls.Add(dgvPodcasts);
-            panel2.Controls.Add(button3);
+            panel2.Controls.Add(btnHamtaRss);
             panel2.Controls.Add(button2);
             panel2.Controls.Add(button1);
             panel2.Controls.Add(btnHamtaAllaPodcasts);
@@ -151,21 +150,21 @@
             // dgvPodcasts
             // 
             dgvPodcasts.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            dgvPodcasts.Location = new Point(6, 224);
+            dgvPodcasts.Location = new Point(360, 441);
             dgvPodcasts.Name = "dgvPodcasts";
-            dgvPodcasts.Size = new Size(370, 154);
+            dgvPodcasts.Size = new Size(627, 154);
             dgvPodcasts.TabIndex = 13;
             dgvPodcasts.CellContentClick += dgvPodcasts_CellContentClick;
             // 
-            // button3
+            // btnHamtaRss
             // 
-            button3.Location = new Point(106, 127);
-            button3.Name = "button3";
-            button3.Size = new Size(96, 23);
-            button3.TabIndex = 12;
-            button3.Text = "Hämta RSS";
-            button3.UseVisualStyleBackColor = true;
-            button3.Click += button3_Click;
+            btnHamtaRss.Location = new Point(106, 127);
+            btnHamtaRss.Name = "btnHamtaRss";
+            btnHamtaRss.Size = new Size(96, 23);
+            btnHamtaRss.TabIndex = 12;
+            btnHamtaRss.Text = "Hämta RSS";
+            btnHamtaRss.UseVisualStyleBackColor = true;
+            btnHamtaRss.Click += button3_Click;
             // 
             // button2
             // 
@@ -288,7 +287,8 @@
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(1103, 395);
+            ClientSize = new Size(1212, 699);
+            Controls.Add(dgvPodcasts);
             Controls.Add(panel3);
             Controls.Add(panel2);
             Controls.Add(panel1);
@@ -320,7 +320,7 @@
         private TextBox txtPodcastUrl;
         private Label label3;
         private DataGridView dgvPodcasts;
-        private Button button3;
+        private Button btnHamtaRss;
         private Button button2;
         private Button button1;
         private Button btnHamtaAllaPodcasts;

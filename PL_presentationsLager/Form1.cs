@@ -21,9 +21,10 @@ namespace PL_presentationsLager
             var podcastRepository = new PodcastRepository(mongo);
             var kategoriRepository = new KategoriRepository(mongo);
 
-            podcastService = new PodcastService(podcastRepository);
-            kategoriService = new KategoriService(kategoriRepository);
             rssService = new RssService();
+            podcastService = new PodcastService(podcastRepository, rssService);
+            kategoriService = new KategoriService(kategoriRepository);
+            
 
             urlTimer = new System.Windows.Forms.Timer();
             urlTimer.Interval = 1000;
@@ -115,8 +116,43 @@ namespace PL_presentationsLager
 
         private async void btnHamtaAllaPodcasts_Click(object sender, EventArgs e)
         {
-            var lista = await podcastService.HamtaAllaPodcastsAsync();
-            dgvPodcasts.DataSource = lista;
+            // 1. Hämta alla podcasts från databasen via BL
+            var podcasts = await podcastService.HamtaAllaPodcastsAsync();
+
+            // 2. Sätt som datakälla till griden
+            dgvPodcasts.DataSource = podcasts;
+
+            // 3. Dölj Podcast.Id (tekniskt fält som användaren inte behöver se)
+            if (dgvPodcasts.Columns.Contains("Id"))
+                dgvPodcasts.Columns["Id"].Visible = false;
+
+            // 4. Dölj Podcast.KategoriId (användaren ska se kategori-namnet istället)
+            if (dgvPodcasts.Columns.Contains("KategoriId"))
+                dgvPodcasts.Columns["KategoriId"].Visible = false;
+
+            // 5. Hämta alla kategorier (vi behöver dessa för att slå upp kategorinamn)
+            var kategorier = await kategoriService.HamtaAllaKategorierAsync();
+
+            // 6. Skapa en kolumn för kategori-namn om den inte finns
+            if (!dgvPodcasts.Columns.Contains("KategoriNamn"))
+            {
+                // Första parametern är kolumnens namn i koden
+                // Andra parametern är vad användaren ser som rubrik
+                dgvPodcasts.Columns.Add("KategoriNamn", "Kategori");
+            }
+
+            // 7. Fyll kolumnen "KategoriNamn" utifrån varje podcasts KategoriId
+            foreach (DataGridViewRow row in dgvPodcasts.Rows)
+            {
+                if (row.DataBoundItem is Podcast p)
+                {
+                    // hitta kategorin där Id == podcast.KategoriId
+                    var kategori = kategorier.FirstOrDefault(k => k.Id == p.KategoriId);
+
+                    // skriv kategori-namnet i den nya kolumnen
+                    row.Cells["KategoriNamn"].Value = kategori?.Namn;
+                }
+            }
         }
 
         private async void button2_Click(object sender, EventArgs e)
@@ -160,56 +196,50 @@ namespace PL_presentationsLager
 
         private async void button3_Click(object sender, EventArgs e)
         {
-            string url = txtPodcastUrl.Text.Trim();
-            if (string.IsNullOrWhiteSpace(url))
+            try
             {
-                MessageBox.Show("Ange en giltig RSS-URL.");
-                return;
-            }
-
-            //Hämta podcastens namn från RSS
-            if (string.IsNullOrWhiteSpace(txtPodcastNamn.Text))
-            {
-                var podcastNamn = await rssService.HamtaPodcastTitelFranRssAsync(url);
-                if (podcastNamn != null)
+                string url = txtPodcastUrl.Text.Trim();
+                if (string.IsNullOrWhiteSpace(url))
                 {
-                    txtPodcastNamn.Text = podcastNamn;
+                    MessageBox.Show("Ange en RSS-URL.");
+                    return;
                 }
-                else
-                {
-                    MessageBox.Show("Kunde inte hämta podcastens namn från RSS-flödet.");
-                    return; //Avbryt om vi inte kan hämta namnet
-                }
-            }
 
-            //Om en podcast är vald i datagridview uppdatera avsnittet
-            if (dgvPodcasts.CurrentRow?.DataBoundItem is Podcast podcast)
-            {
-                var avsnittLista = await rssService.HamtaAvsnittFranRssAsync(podcast.Url);
-                if (avsnittLista.Count == 0)
+                // Hämta RSS via BL
+                var podcast = await podcastService.LasInRssAsync(url);
+
+                if (podcast == null)
                 {
                     MessageBox.Show("Kunde inte läsa RSS-flödet.");
                     return;
                 }
 
-                podcast.Avsnitt = avsnittLista;
+                //Visa titel om textbox är tom
+                if (string.IsNullOrWhiteSpace(txtPodcastNamn.Text))
+                    txtPodcastNamn.Text = podcast.Namn;
 
-                var fel = await podcastService.UppdateraPodcastAsync(podcast);
-                if (fel != null)
-                {
-                    MessageBox.Show(fel);
-                    return;
-                }
-
-                MessageBox.Show("Avsnitt uppdaterade.");
+                //Visa avsnitten
+                dgvAvsnitt.DataSource = podcast.Avsnitt;
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Tekniskt fel: " + ex.Message);
             }
         }
 
-        private void button4_Click(object sender, EventArgs e)
+        private async void button4_Click(object sender, EventArgs e)
         {
             if (dgvPodcasts.CurrentRow?.DataBoundItem is Podcast podcast)
             {
-                dgvAvsnitt.DataSource = podcast.Avsnitt;
+                try
+                {
+                    var avsnitt = await rssService.HamtaAvsnittFranRssAsync(podcast.Url);
+                    dgvAvsnitt.DataSource = avsnitt;
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show("Kunde inte hämta avsnitt: " + ex.Message);
+                }
             }
         }
 

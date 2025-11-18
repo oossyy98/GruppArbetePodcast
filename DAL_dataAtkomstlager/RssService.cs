@@ -11,53 +11,41 @@ namespace DAL_dataAtkomstlager
 {
     public class RssService
     {
-        public async Task<List<Avsnitt>> HamtaAvsnittFranRssAsync(string rssUrl)
+        public async Task<List<Avsnitt>> HamtaAvsnittFranRssAsync(string url)
         {
-            try
+            return await Task.Run(() =>
             {
-                using (var reader = XmlReader.Create(rssUrl))
+                using (var reader = XmlReader.Create(url))
                 {
                     var feed = SyndicationFeed.Load(reader);
-                    var avsnittLista = new List<Avsnitt>();
+                    var lista = new List<Avsnitt>();
 
-                    foreach (var i in feed.Items)
+                    foreach (var item in feed.Items)
                     {
-                        var avsnitt = new Avsnitt
+                        lista.Add(new Avsnitt
                         {
-                            Titel = i.Title.Text,
-                            Beskrivning = i.Summary?.Text,
-                            PubliceringsDatum = i.PublishDate.UtcDateTime
-                        };
-
-                        avsnittLista.Add(avsnitt);
+                            Titel = item.Title?.Text,
+                            Beskrivning = item.Summary?.Text,
+                            PubliceringsDatum = item.PublishDate.UtcDateTime
+                        });
                     }
 
-                    return avsnittLista;
+                    return lista;
                 }
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine ("Fel vid hämtning av RSS-flöde: " + ex.Message);
-                return new List<Avsnitt>();
-            }
-
+            });
         }
 
-        public async Task<string?> HamtaPodcastTitelFranRssAsync(string rssUrl)
+
+        public async Task<string?> HamtaPodcastTitelFranRssAsync(string url)
         {
-            try
+            return await Task.Run(() =>
             {
-                using (var reader = XmlReader.Create(rssUrl))
+                using (var reader = XmlReader.Create(url))
                 {
                     var feed = SyndicationFeed.Load(reader);
-                    return feed.Title.Text; //returna poddens titel
+                    return feed.Title?.Text;
                 }
-            } 
-            catch (Exception ex)
-            {
-                Console.WriteLine("Fel vid hämtning" + ex.Message);
-                return null;
-            }
+            });
         }
     }
 }
