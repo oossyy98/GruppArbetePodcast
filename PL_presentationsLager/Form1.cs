@@ -25,7 +25,7 @@ namespace PL_presentationsLager
             podcastService = new PodcastService(podcastRepository, rssService);
             kategoriService = new KategoriService(kategoriRepository);
 
-
+            //timer för rss-hämtning
             urlTimer = new System.Windows.Forms.Timer();
             urlTimer.Interval = 1000;
             urlTimer.Tick += UrlTimer_Tick;
@@ -45,14 +45,26 @@ namespace PL_presentationsLager
 
         }
 
+        //kategori hantering
         private async Task LaddaKategorierAsync()
         {
             var lista = await kategoriService.HamtaAllaKategorierAsync();
 
+            // fyll lista till vänster
+            lstKategorier.DataSource = null;
+            lstKategorier.DataSource = lista;
+            lstKategorier.DisplayMember = "Namn";
+            lstKategorier.ValueMember = "Id";
+
+            // fyll comboboxen i mitten
             cbKategorier.DataSource = null;
             cbKategorier.DataSource = lista;
             cbKategorier.DisplayMember = "Namn";
             cbKategorier.ValueMember = "Id";
+
+            
+            lstKategorier.ClearSelected();
+
         }
 
 
@@ -61,11 +73,27 @@ namespace PL_presentationsLager
 
         }
 
-        private void lstKategorier_SelectedIndexChanged(object sender, EventArgs e)
+        private async void lstKategorier_SelectedIndexChanged(object sender, EventArgs e)
         {
-            if (lstKategorier.SelectedItem is Kategori kategori)
+            if (lstKategorier.SelectedItem is Kategori k)
             {
-                cbKategorier.SelectedValue = kategori.Id;
+                var alla = await podcastService.HamtaAllaPodcastsAsync();
+
+                var filtrerade = alla.Where(p => p.KategoriId == k.Id).ToList();
+
+                lstPodcast.DataSource = null;
+                lstPodcast.DataSource = filtrerade;
+                lstPodcast.DisplayMember = "Namn";
+                lstPodcast.ValueMember = "Id";
+
+                
+                lstPodcast.ClearSelected();
+
+                // töm avsnittsdelen när kategori byts
+                lstAvsnitt.DataSource = null;
+                lblTitel.Text = "";
+                lblPubliceringsdatum.Text = "";
+                txtBeskrivning.Text = "";
             }
         }
 
@@ -98,156 +126,95 @@ namespace PL_presentationsLager
 
         private async void btnSkapaPodcast_Click(object sender, EventArgs e)
         {
-            var podcast = new Podcast();
-            podcast.Namn = txtPodcastNamn.Text.Trim();
-            podcast.Url = txtPodcastUrl.Text.Trim();
+            if (cbKategorier.SelectedValue == null)
+            {
+                MessageBox.Show("Välj en kategori.");
+                return;
+            }
+
+            string url = txtPodcastUrl.Text.Trim();
+
+            // HÄMTA RSS + avsnitt
+            var podcast = await podcastService.LasInRssAsync(url);
+            if (podcast == null)
+            {
+                MessageBox.Show("Kunde inte läsa RSS.");
+                return;
+            }
+
+            // Lägg till kategori
             podcast.KategoriId = cbKategorier.SelectedValue.ToString();
 
+            // Spara i databasen
             var fel = await podcastService.SkapaPodcastAsync(podcast);
-
             if (fel != null)
             {
                 MessageBox.Show(fel);
                 return;
             }
 
-            MessageBox.Show("Podcast skapad!");
+            txtPodcastNamn.Clear();
+            txtPodcastUrl.Clear();
+
+            // Uppdatera listan
+            lstKategorier_SelectedIndexChanged(null, null);
         }
 
-        private async void btnHamtaAllaPodcasts_Click(object sender, EventArgs e)
-        {
-            // 1. Hämta alla podcasts från databasen via BL
-            var podcasts = await podcastService.HamtaAllaPodcastsAsync();
-
-            // 2. Sätt som datakälla till griden
-            dgvPodcasts.DataSource = podcasts;
-
-            // 3. Dölj Podcast.Id (tekniskt fält som användaren inte behöver se)
-            if (dgvPodcasts.Columns.Contains("Id"))
-                dgvPodcasts.Columns["Id"].Visible = false;
-
-            // 4. Dölj Podcast.KategoriId (användaren ska se kategori-namnet istället)
-            if (dgvPodcasts.Columns.Contains("KategoriId"))
-                dgvPodcasts.Columns["KategoriId"].Visible = false;
-
-            // 5. Hämta alla kategorier (vi behöver dessa för att slå upp kategorinamn)
-            var kategorier = await kategoriService.HamtaAllaKategorierAsync();
-
-            // 6. Skapa en kolumn för kategori-namn om den inte finns
-            if (!dgvPodcasts.Columns.Contains("KategoriNamn"))
-            {
-                // Första parametern är kolumnens namn i koden
-                // Andra parametern är vad användaren ser som rubrik
-                dgvPodcasts.Columns.Add("KategoriNamn", "Kategori");
-            }
-
-            // 7. Fyll kolumnen "KategoriNamn" utifrån varje podcasts KategoriId
-            foreach (DataGridViewRow row in dgvPodcasts.Rows)
-            {
-                if (row.DataBoundItem is Podcast p)
-                {
-                    // hitta kategorin där Id == podcast.KategoriId
-                    var kategori = kategorier.FirstOrDefault(k => k.Id == p.KategoriId);
-
-                    // skriv kategori-namnet i den nya kolumnen
-                    row.Cells["KategoriNamn"].Value = kategori?.Namn;
-                }
-            }
-        }
 
         private async void button2_Click(object sender, EventArgs e)
         {
-            if (dgvPodcasts.CurrentRow?.DataBoundItem is Podcast podcast)
+            if (lstPodcast.SelectedValue == null)
             {
-                var fel = await podcastService.RaderaPodcastAsync(podcast.Id);
-
-                if (fel != null)
-                {
-                    MessageBox.Show(fel);
-                    return;
-                }
-
-                MessageBox.Show("Podcast raderad!");
-
-                var lista = await podcastService.HamtaAllaPodcastsAsync();
-                dgvPodcasts.DataSource = lista;
+                MessageBox.Show("Välj en podcast.");
+                return;
             }
+
+            var id = lstPodcast.SelectedValue.ToString();
+
+            var fel = await podcastService.RaderaPodcastAsync(id);
+            if (fel != null)
+            {
+                MessageBox.Show(fel);
+                return;
+            }
+
+            lstKategorier_SelectedIndexChanged(null, null);
+            lstAvsnitt.DataSource = null;
         }
 
         private async void button1_Click(object sender, EventArgs e)
         {
-            if (dgvPodcasts.CurrentRow?.DataBoundItem is Podcast podcast)
+            if (lstPodcast.SelectedItem is not Podcast p)
             {
-                podcast.Namn = txtPodcastNamn.Text.Trim();
-                podcast.Url = txtPodcastUrl.Text.Trim();
-                podcast.KategoriId = cbKategorier.SelectedValue.ToString();
-
-                var fel = await podcastService.UppdateraPodcastAsync(podcast);
-
-                if (fel != null)
-                {
-                    MessageBox.Show(fel);
-                    return;
-                }
-
-                MessageBox.Show("Podcast uppdaterad!");
+                MessageBox.Show("Välj en podcast.");
+                return;
             }
+
+            p.Namn = txtPodcastNamn.Text.Trim();
+            p.Url = txtPodcastUrl.Text.Trim();
+            p.KategoriId = cbKategorier.SelectedValue?.ToString();
+
+            var fel = await podcastService.UppdateraPodcastAsync(p);
+            if (fel != null)
+            {
+                MessageBox.Show(fel);
+                return;
+            }
+
+            lstKategorier_SelectedIndexChanged(null, null);
         }
 
-        private async void button3_Click(object sender, EventArgs e)
-        {
-            try
-            {
-                string url = txtPodcastUrl.Text.Trim();
-                if (string.IsNullOrWhiteSpace(url))
-                {
-                    MessageBox.Show("Ange en RSS-URL.");
-                    return;
-                }
 
-                // Hämta RSS via BL
-                var podcast = await podcastService.LasInRssAsync(url);
 
-                if (podcast == null)
-                {
-                    MessageBox.Show("Kunde inte läsa RSS-flödet.");
-                    return;
-                }
-
-                //Visa titel om textbox är tom
-                if (string.IsNullOrWhiteSpace(txtPodcastNamn.Text))
-                    txtPodcastNamn.Text = podcast.Namn;
-
-                //Visa avsnitten
-                dgvAvsnitt.DataSource = podcast.Avsnitt;
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show("Tekniskt fel: " + ex.Message);
-            }
-        }
-
-        private async void button4_Click(object sender, EventArgs e)
-        {
-            if (dgvPodcasts.CurrentRow?.DataBoundItem is Podcast podcast)
-            {
-                try
-                {
-                    var avsnitt = await rssService.HamtaAvsnittFranRssAsync(podcast.Url);
-                    dgvAvsnitt.DataSource = avsnitt;
-                }
-                catch (Exception ex)
-                {
-                    MessageBox.Show("Kunde inte hämta avsnitt: " + ex.Message);
-                }
-            }
-        }
-
+        //LADDA KATEGORIER METOD
         private async void btnHamtaKategorier_Click(object sender, EventArgs e)
         {
             await LaddaKategoriListaAsync();
+
+
         }
 
+        //FYLLA LISTAN
         private async Task LaddaKategoriListaAsync()
         {
             var lista = await kategoriService.HamtaAllaKategorierAsync();
@@ -256,73 +223,29 @@ namespace PL_presentationsLager
             lstKategorier.DisplayMember = "Namn";
             lstKategorier.ValueMember = "Id";
         }
+
+        //RADERA KATEGORI KNAPP
         private async void btnRaderaKategori_Click(object sender, EventArgs e)
         {
-            if (lstKategorier.SelectedItem is Kategori kategori)
+            if (lstKategorier.SelectedValue == null)
             {
-                var allaPodcasts = await podcastService.HamtaAllaPodcastsAsync();
-                var antalPodcasts = allaPodcasts.Count(p => p.KategoriId == kategori.Id);
-
-                string meddelande;
-                if (antalPodcasts > 0)
-                {
-                    meddelande = $"Kategorin '{kategori.Namn}' har {antalPodcasts} podcast(s) kopplade.\n\n" +
-                                $"Är du säker på att du vill radera kategorin?\n" +
-                                $"Alla {antalPodcasts} podcast(s) kommer också att raderas!";
-                }
-                else
-                {
-                    meddelande = $"Är du säker på att du vill radera kategorin '{kategori.Namn}'?";
-                }
-
-                var resultat = MessageBox.Show(
-                    meddelande,
-                    "Bekräfta radering",
-                    MessageBoxButtons.YesNo,
-                    MessageBoxIcon.Warning
-                );
-
-                if (resultat == DialogResult.Yes)
-                {
-                    // Radera alla podcasts i kategorin FÖRST
-                    if (antalPodcasts > 0)
-                    {
-                        var berordaPodcasts = allaPodcasts.Where(p => p.KategoriId == kategori.Id).ToList();
-                        foreach (var podcast in berordaPodcasts)
-                        {
-                            await podcastService.RaderaPodcastAsync(podcast.Id);
-                        }
-                    }
-
-                    // Radera kategorin
-                    var fel = await kategoriService.RaderaKategoriAsync(kategori.Id);
-                    if (fel != null)
-                    {
-                        MessageBox.Show(fel);
-                        return;
-                    }
-
-                    if (antalPodcasts > 0)
-                    {
-                        MessageBox.Show($"Kategori och {antalPodcasts} podcast(s) raderade!");
-                    }
-                    else
-                    {
-                        MessageBox.Show("Kategori raderad!");
-                    }
-
-                    await LaddaKategoriListaAsync();
-                    await LaddaKategorierAsync();
-
-                    // ? Uppdatera podcast-listan direkt istället
-                    var uppdateradLista = await podcastService.HamtaAllaPodcastsAsync();
-                    dgvPodcasts.DataSource = uppdateradLista;
-                }
+                MessageBox.Show("Välj en kategori.");
+                return;
             }
-            else
+
+            var id = lstKategorier.SelectedValue.ToString();
+            var fel = await kategoriService.RaderaKategoriAsync(id);
+
+            if (fel != null)
             {
-                MessageBox.Show("Välj en kategori att radera.");
+                MessageBox.Show(fel);
+                return;
             }
+
+            await LaddaKategorierAsync();
+
+            lstPodcast.DataSource = null;
+            lstAvsnitt.DataSource = null;
         }
 
         private async void UrlTimer_Tick(object sender, EventArgs e)
@@ -371,6 +294,43 @@ namespace PL_presentationsLager
         private void dgvAvsnitt_CellContentClick(object sender, DataGridViewCellEventArgs e)
         {
 
+        }
+
+
+        private void lstPodcast_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (lstPodcast.SelectedItem is Podcast p)
+            {
+                // fyll textfälten
+                txtPodcastNamn.Text = p.Namn;
+                txtPodcastUrl.Text = p.Url;
+                cbKategorier.SelectedValue = p.KategoriId;
+
+                // VISA AVSNITT DIREKT
+                lstAvsnitt.DataSource = null;
+                lstAvsnitt.DataSource = p.Avsnitt;
+                lstAvsnitt.DisplayMember = "Titel";
+
+                // töm avsnitts-detaljer
+                lblTitel.Text = "";
+                lblPubliceringsdatum.Text = "";
+                txtBeskrivning.Text = "";
+            }
+        }
+
+        private void panel4_Paint(object sender, PaintEventArgs e)
+        {
+
+        }
+
+        private void lstAvsnitt_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (lstAvsnitt.SelectedItem is Avsnitt a)
+            {
+                lblTitel.Text = a.Titel;
+                lblPubliceringsdatum.Text = a.PubliceringsDatum?.ToString("yyyy-MM-dd");
+                txtBeskrivning.Text = a.Beskrivning;
+            }
         }
     }
 

@@ -28,17 +28,12 @@
         /// </summary>
         private void InitializeComponent()
         {
-            label1 = new Label();
             txtKategoriNamn = new TextBox();
             btnSkapaKategori = new Button();
-            btnHamtaKategorier = new Button();
             lstKategorier = new ListBox();
             btnRaderaKategori = new Button();
-            dgvPodcasts = new DataGridView();
-            btnHamtaRss = new Button();
-            button2 = new Button();
+            btnRaderaPodcast = new Button();
             button1 = new Button();
-            btnHamtaAllaPodcasts = new Button();
             btnSkapaPodcast = new Button();
             cbKategorier = new ComboBox();
             label4 = new Label();
@@ -46,18 +41,22 @@
             label3 = new Label();
             label2 = new Label();
             txtPodcastNamn = new TextBox();
-            dgvAvsnitt = new DataGridView();
-            button4 = new Button();
             tableLayoutPanel1 = new TableLayoutPanel();
             panel4 = new Panel();
+            label1 = new Label();
             panel5 = new Panel();
             panel6 = new Panel();
+            lstPodcast = new ListBox();
             panel7 = new Panel();
             panel1 = new Panel();
+            lblPubliceringsdatum = new Label();
+            lblPubliceringsdatumText = new Label();
+            lblTitel = new Label();
+            lblTitelText = new Label();
             panel2 = new Panel();
+            txtBeskrivning = new TextBox();
+            lstAvsnitt = new ListBox();
             panel8 = new Panel();
-            ((System.ComponentModel.ISupportInitialize)dgvPodcasts).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)dgvAvsnitt).BeginInit();
             tableLayoutPanel1.SuspendLayout();
             panel4.SuspendLayout();
             panel5.SuspendLayout();
@@ -67,15 +66,6 @@
             panel2.SuspendLayout();
             panel8.SuspendLayout();
             SuspendLayout();
-            // 
-            // label1
-            // 
-            label1.AutoSize = true;
-            label1.Location = new Point(3, 6);
-            label1.Name = "label1";
-            label1.Size = new Size(87, 15);
-            label1.TabIndex = 0;
-            label1.Text = "Kategori Namn";
             // 
             // txtKategoriNamn
             // 
@@ -94,16 +84,6 @@
             btnSkapaKategori.UseVisualStyleBackColor = true;
             btnSkapaKategori.Click += btnSkapaKategori_Click;
             // 
-            // btnHamtaKategorier
-            // 
-            btnHamtaKategorier.Location = new Point(199, 6);
-            btnHamtaKategorier.Name = "btnHamtaKategorier";
-            btnHamtaKategorier.Size = new Size(100, 23);
-            btnHamtaKategorier.TabIndex = 3;
-            btnHamtaKategorier.Text = "Visa alla";
-            btnHamtaKategorier.UseVisualStyleBackColor = true;
-            btnHamtaKategorier.Click += btnHamtaKategorier_Click;
-            // 
             // lstKategorier
             // 
             lstKategorier.Dock = DockStyle.Fill;
@@ -111,7 +91,7 @@
             lstKategorier.ItemHeight = 15;
             lstKategorier.Location = new Point(0, 0);
             lstKategorier.Name = "lstKategorier";
-            lstKategorier.Size = new Size(311, 295);
+            lstKategorier.Size = new Size(341, 295);
             lstKategorier.TabIndex = 4;
             lstKategorier.SelectedIndexChanged += lstKategorier_SelectedIndexChanged;
             // 
@@ -125,39 +105,19 @@
             btnRaderaKategori.UseVisualStyleBackColor = true;
             btnRaderaKategori.Click += btnRaderaKategori_Click;
             // 
-            // dgvPodcasts
+            // btnRaderaPodcast
             // 
-            dgvPodcasts.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            dgvPodcasts.Dock = DockStyle.Fill;
-            dgvPodcasts.Location = new Point(0, 0);
-            dgvPodcasts.Name = "dgvPodcasts";
-            dgvPodcasts.Size = new Size(417, 295);
-            dgvPodcasts.TabIndex = 13;
-            dgvPodcasts.CellContentClick += dgvPodcasts_CellContentClick;
-            // 
-            // btnHamtaRss
-            // 
-            btnHamtaRss.Location = new Point(915, 16);
-            btnHamtaRss.Name = "btnHamtaRss";
-            btnHamtaRss.Size = new Size(118, 31);
-            btnHamtaRss.TabIndex = 12;
-            btnHamtaRss.Text = "Hämta RSS";
-            btnHamtaRss.UseVisualStyleBackColor = true;
-            btnHamtaRss.Click += button3_Click;
-            // 
-            // button2
-            // 
-            button2.Location = new Point(309, 65);
-            button2.Name = "button2";
-            button2.Size = new Size(100, 23);
-            button2.TabIndex = 11;
-            button2.Text = "Radera";
-            button2.UseVisualStyleBackColor = true;
-            button2.Click += button2_Click;
+            btnRaderaPodcast.Location = new Point(223, 65);
+            btnRaderaPodcast.Name = "btnRaderaPodcast";
+            btnRaderaPodcast.Size = new Size(96, 23);
+            btnRaderaPodcast.TabIndex = 11;
+            btnRaderaPodcast.Text = "Radera";
+            btnRaderaPodcast.UseVisualStyleBackColor = true;
+            btnRaderaPodcast.Click += button2_Click;
             // 
             // button1
             // 
-            button1.Location = new Point(207, 65);
+            button1.Location = new Point(220, 10);
             button1.Name = "button1";
             button1.Size = new Size(96, 23);
             button1.TabIndex = 10;
@@ -165,30 +125,20 @@
             button1.UseVisualStyleBackColor = true;
             button1.Click += button1_Click;
             // 
-            // btnHamtaAllaPodcasts
-            // 
-            btnHamtaAllaPodcasts.Location = new Point(105, 65);
-            btnHamtaAllaPodcasts.Name = "btnHamtaAllaPodcasts";
-            btnHamtaAllaPodcasts.Size = new Size(96, 23);
-            btnHamtaAllaPodcasts.TabIndex = 9;
-            btnHamtaAllaPodcasts.Text = "Visa alla podcasts";
-            btnHamtaAllaPodcasts.UseVisualStyleBackColor = true;
-            btnHamtaAllaPodcasts.Click += btnHamtaAllaPodcasts_Click;
-            // 
             // btnSkapaPodcast
             // 
             btnSkapaPodcast.Location = new Point(3, 65);
             btnSkapaPodcast.Name = "btnSkapaPodcast";
             btnSkapaPodcast.Size = new Size(96, 23);
             btnSkapaPodcast.TabIndex = 5;
-            btnSkapaPodcast.Text = "Skapa podcast";
+            btnSkapaPodcast.Text = "Lägg till podcast";
             btnSkapaPodcast.UseVisualStyleBackColor = true;
             btnSkapaPodcast.Click += btnSkapaPodcast_Click;
             // 
             // cbKategorier
             // 
             cbKategorier.FormattingEnabled = true;
-            cbKategorier.Location = new Point(101, 42);
+            cbKategorier.Location = new Point(101, 39);
             cbKategorier.Name = "cbKategorier";
             cbKategorier.Size = new Size(100, 23);
             cbKategorier.TabIndex = 8;
@@ -206,7 +156,7 @@
             // 
             txtPodcastUrl.Location = new Point(68, 21);
             txtPodcastUrl.Name = "txtPodcastUrl";
-            txtPodcastUrl.Size = new Size(841, 23);
+            txtPodcastUrl.Size = new Size(883, 23);
             txtPodcastUrl.TabIndex = 6;
             txtPodcastUrl.TextChanged += txtPodcastUrl_TextChanged;
             // 
@@ -230,37 +180,17 @@
             // 
             // txtPodcastNamn
             // 
-            txtPodcastNamn.Location = new Point(101, 10);
+            txtPodcastNamn.Location = new Point(101, 6);
             txtPodcastNamn.Name = "txtPodcastNamn";
             txtPodcastNamn.Size = new Size(100, 23);
             txtPodcastNamn.TabIndex = 1;
             // 
-            // dgvAvsnitt
-            // 
-            dgvAvsnitt.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            dgvAvsnitt.Dock = DockStyle.Fill;
-            dgvAvsnitt.Location = new Point(0, 0);
-            dgvAvsnitt.Name = "dgvAvsnitt";
-            dgvAvsnitt.Size = new Size(312, 295);
-            dgvAvsnitt.TabIndex = 14;
-            dgvAvsnitt.CellContentClick += dgvAvsnitt_CellContentClick;
-            // 
-            // button4
-            // 
-            button4.Location = new Point(3, 65);
-            button4.Name = "button4";
-            button4.Size = new Size(100, 23);
-            button4.TabIndex = 3;
-            button4.Text = "Visa avsnitt";
-            button4.UseVisualStyleBackColor = true;
-            button4.Click += button4_Click;
-            // 
             // tableLayoutPanel1
             // 
             tableLayoutPanel1.ColumnCount = 3;
-            tableLayoutPanel1.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 30F));
-            tableLayoutPanel1.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 40F));
-            tableLayoutPanel1.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 30F));
+            tableLayoutPanel1.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 32.7977333F));
+            tableLayoutPanel1.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 30.7183361F));
+            tableLayoutPanel1.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 36.3894157F));
             tableLayoutPanel1.Controls.Add(panel4, 0, 0);
             tableLayoutPanel1.Controls.Add(panel5, 0, 1);
             tableLayoutPanel1.Controls.Add(panel6, 1, 1);
@@ -278,7 +208,6 @@
             // 
             // panel4
             // 
-            panel4.Controls.Add(btnHamtaKategorier);
             panel4.Controls.Add(btnRaderaKategori);
             panel4.Controls.Add(btnSkapaKategori);
             panel4.Controls.Add(label1);
@@ -286,8 +215,18 @@
             panel4.Dock = DockStyle.Fill;
             panel4.Location = new Point(3, 3);
             panel4.Name = "panel4";
-            panel4.Size = new Size(311, 91);
+            panel4.Size = new Size(341, 91);
             panel4.TabIndex = 0;
+            panel4.Paint += panel4_Paint;
+            // 
+            // label1
+            // 
+            label1.AutoSize = true;
+            label1.Location = new Point(3, 6);
+            label1.Name = "label1";
+            label1.Size = new Size(87, 15);
+            label1.TabIndex = 0;
+            label1.Text = "Kategori Namn";
             // 
             // panel5
             // 
@@ -295,56 +234,120 @@
             panel5.Dock = DockStyle.Fill;
             panel5.Location = new Point(3, 100);
             panel5.Name = "panel5";
-            panel5.Size = new Size(311, 295);
+            panel5.Size = new Size(341, 295);
             panel5.TabIndex = 1;
             // 
             // panel6
             // 
-            panel6.Controls.Add(dgvPodcasts);
+            panel6.Controls.Add(lstPodcast);
             panel6.Dock = DockStyle.Fill;
-            panel6.Location = new Point(320, 100);
+            panel6.Location = new Point(350, 100);
             panel6.Name = "panel6";
-            panel6.Size = new Size(417, 295);
+            panel6.Size = new Size(319, 295);
             panel6.TabIndex = 2;
+            // 
+            // lstPodcast
+            // 
+            lstPodcast.Dock = DockStyle.Fill;
+            lstPodcast.FormattingEnabled = true;
+            lstPodcast.ItemHeight = 15;
+            lstPodcast.Location = new Point(0, 0);
+            lstPodcast.Name = "lstPodcast";
+            lstPodcast.Size = new Size(319, 295);
+            lstPodcast.TabIndex = 0;
+            lstPodcast.SelectedIndexChanged += lstPodcast_SelectedIndexChanged;
             // 
             // panel7
             // 
             panel7.Controls.Add(label2);
-            panel7.Controls.Add(button2);
+            panel7.Controls.Add(btnRaderaPodcast);
             panel7.Controls.Add(txtPodcastNamn);
             panel7.Controls.Add(button1);
             panel7.Controls.Add(label4);
-            panel7.Controls.Add(btnHamtaAllaPodcasts);
             panel7.Controls.Add(cbKategorier);
             panel7.Controls.Add(btnSkapaPodcast);
             panel7.Dock = DockStyle.Fill;
-            panel7.Location = new Point(320, 3);
+            panel7.Location = new Point(350, 3);
             panel7.Name = "panel7";
-            panel7.Size = new Size(417, 91);
+            panel7.Size = new Size(319, 91);
             panel7.TabIndex = 3;
             // 
             // panel1
             // 
-            panel1.Controls.Add(button4);
+            panel1.Controls.Add(lblPubliceringsdatum);
+            panel1.Controls.Add(lblPubliceringsdatumText);
+            panel1.Controls.Add(lblTitel);
+            panel1.Controls.Add(lblTitelText);
             panel1.Dock = DockStyle.Fill;
-            panel1.Location = new Point(743, 3);
+            panel1.Location = new Point(675, 3);
             panel1.Name = "panel1";
-            panel1.Size = new Size(312, 91);
+            panel1.Size = new Size(380, 91);
             panel1.TabIndex = 4;
+            // 
+            // lblPubliceringsdatum
+            // 
+            lblPubliceringsdatum.Location = new Point(124, 42);
+            lblPubliceringsdatum.Name = "lblPubliceringsdatum";
+            lblPubliceringsdatum.Size = new Size(100, 23);
+            lblPubliceringsdatum.TabIndex = 16;
+            // 
+            // lblPubliceringsdatumText
+            // 
+            lblPubliceringsdatumText.Location = new Point(3, 42);
+            lblPubliceringsdatumText.Name = "lblPubliceringsdatumText";
+            lblPubliceringsdatumText.Size = new Size(115, 23);
+            lblPubliceringsdatumText.TabIndex = 15;
+            lblPubliceringsdatumText.Text = "Publiceringsdatum:";
+            // 
+            // lblTitel
+            // 
+            lblTitel.Location = new Point(47, 2);
+            lblTitel.Name = "lblTitel";
+            lblTitel.Size = new Size(200, 23);
+            lblTitel.TabIndex = 14;
+            // 
+            // lblTitelText
+            // 
+            lblTitelText.Location = new Point(3, 6);
+            lblTitelText.Name = "lblTitelText";
+            lblTitelText.Size = new Size(100, 23);
+            lblTitelText.TabIndex = 13;
+            lblTitelText.Text = "Titel:";
             // 
             // panel2
             // 
-            panel2.Controls.Add(dgvAvsnitt);
+            panel2.Controls.Add(txtBeskrivning);
+            panel2.Controls.Add(lstAvsnitt);
             panel2.Dock = DockStyle.Fill;
-            panel2.Location = new Point(743, 100);
+            panel2.Location = new Point(675, 100);
             panel2.Name = "panel2";
-            panel2.Size = new Size(312, 295);
+            panel2.Size = new Size(380, 295);
             panel2.TabIndex = 5;
+            // 
+            // txtBeskrivning
+            // 
+            txtBeskrivning.Dock = DockStyle.Bottom;
+            txtBeskrivning.Location = new Point(0, 193);
+            txtBeskrivning.Multiline = true;
+            txtBeskrivning.Name = "txtBeskrivning";
+            txtBeskrivning.ReadOnly = true;
+            txtBeskrivning.Size = new Size(380, 102);
+            txtBeskrivning.TabIndex = 1;
+            // 
+            // lstAvsnitt
+            // 
+            lstAvsnitt.Dock = DockStyle.Fill;
+            lstAvsnitt.FormattingEnabled = true;
+            lstAvsnitt.ItemHeight = 15;
+            lstAvsnitt.Location = new Point(0, 0);
+            lstAvsnitt.Name = "lstAvsnitt";
+            lstAvsnitt.Size = new Size(380, 295);
+            lstAvsnitt.TabIndex = 0;
+            lstAvsnitt.SelectedIndexChanged += lstAvsnitt_SelectedIndexChanged;
             // 
             // panel8
             // 
             panel8.Controls.Add(label3);
-            panel8.Controls.Add(btnHamtaRss);
             panel8.Controls.Add(txtPodcastUrl);
             panel8.Dock = DockStyle.Top;
             panel8.Location = new Point(0, 0);
@@ -364,8 +367,6 @@
             Name = "Form1";
             Text = "Form1";
             Load += Form1_Load;
-            ((System.ComponentModel.ISupportInitialize)dgvPodcasts).EndInit();
-            ((System.ComponentModel.ISupportInitialize)dgvAvsnitt).EndInit();
             tableLayoutPanel1.ResumeLayout(false);
             panel4.ResumeLayout(false);
             panel4.PerformLayout();
@@ -375,32 +376,25 @@
             panel7.PerformLayout();
             panel1.ResumeLayout(false);
             panel2.ResumeLayout(false);
+            panel2.PerformLayout();
             panel8.ResumeLayout(false);
             panel8.PerformLayout();
             ResumeLayout(false);
         }
 
         #endregion
-
-        private Label label1;
         private TextBox txtKategoriNamn;
         private Button btnSkapaKategori;
-        private Button btnHamtaKategorier;
         private ListBox lstKategorier;
         private Label label2;
         private TextBox txtPodcastNamn;
         private Label label4;
         private TextBox txtPodcastUrl;
         private Label label3;
-        private DataGridView dgvPodcasts;
-        private Button btnHamtaRss;
-        private Button button2;
+        private Button btnRaderaPodcast;
         private Button button1;
-        private Button btnHamtaAllaPodcasts;
         private Button btnSkapaPodcast;
         private ComboBox cbKategorier;
-        private DataGridView dgvAvsnitt;
-        private Button button4;
         private Button btnRaderaKategori;
         private TableLayoutPanel tableLayoutPanel1;
         private Panel panel8;
@@ -410,5 +404,13 @@
         private Panel panel7;
         private Panel panel1;
         private Panel panel2;
+        private Label label1;
+        private TextBox txtBeskrivning;
+        private ListBox lstAvsnitt;
+        private Label lblTitelText;
+        private Label lblTitel;
+        private Label lblPubliceringsdatumText;
+        private Label lblPubliceringsdatum;
+        private ListBox lstPodcast;
     }
 }
