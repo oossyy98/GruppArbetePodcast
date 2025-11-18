@@ -1,9 +1,7 @@
 ﻿using DAL_dataAtkomstlager;
 using Models;
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace BL_verksamhetsLager
@@ -17,28 +15,37 @@ namespace BL_verksamhetsLager
             this.repository = repository;
         }
 
-        //CREATE
+        // CREATE
         public async Task<string?> SkapaKategoriAsync(Kategori kategori)
         {
             if (string.IsNullOrWhiteSpace(kategori.Namn))
                 return "Kategori måste ha ett namn.";
 
+            var alla = await repository.GetAllAsync();
+            if (alla.Any(k => k.Namn.Equals(kategori.Namn, System.StringComparison.OrdinalIgnoreCase)))
+                return "En kategori med detta namn finns redan.";
+
             await repository.AddAsync(kategori);
             return null;
         }
-        //READ ALLA
+
+        // READ ALL
         public async Task<List<Kategori>> HamtaAllaKategorierAsync()
         {
             var lista = await repository.GetAllAsync();
             return lista ?? new List<Kategori>();
         }
-        //READ EN
+
+        // READ ONE
         public async Task<Kategori?> HamtaKategoriAsync(string kategoriId)
         {
-            var kategori = await repository.GetByIdAsync(kategoriId);
-            return kategori;
+            if (string.IsNullOrWhiteSpace(kategoriId))
+                return null;
+
+            return await repository.GetByIdAsync(kategoriId);
         }
-        //UPDATE
+
+        // UPDATE
         public async Task<string?> UppdateraKategoriAsync(Kategori uppdateradKategori)
         {
             if (string.IsNullOrWhiteSpace(uppdateradKategori.Namn))
@@ -51,7 +58,8 @@ namespace BL_verksamhetsLager
             await repository.UpdateAsync(uppdateradKategori);
             return null;
         }
-        //DELETE
+
+        // DELETE
         public async Task<string?> RaderaKategoriAsync(string kategoriId)
         {
             var kategori = await repository.GetByIdAsync(kategoriId);
@@ -61,7 +69,5 @@ namespace BL_verksamhetsLager
             await repository.DeleteAsync(kategoriId);
             return null;
         }
-
-
     }
 }
