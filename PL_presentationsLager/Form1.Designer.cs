@@ -301,7 +301,7 @@
             // 
             // lblTitel
             // 
-            lblTitel.Location = new Point(47, 2);
+            lblTitel.Location = new Point(47, 6);
             lblTitel.Name = "lblTitel";
             lblTitel.Size = new Size(200, 23);
             lblTitel.TabIndex = 14;
