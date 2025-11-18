@@ -330,6 +330,8 @@ namespace PL_presentationsLager
                 lblTitel.Text = a.Titel;
                 lblPubliceringsdatum.Text = a.PubliceringsDatum?.ToString("yyyy-MM-dd");
                 txtBeskrivning.Text = a.Beskrivning;
+
+                lstAvsnitt.ClearSelected();
             }
         }
     }
