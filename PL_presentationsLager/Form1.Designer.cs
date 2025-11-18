@@ -327,21 +327,20 @@
             // txtBeskrivning
             // 
             txtBeskrivning.Dock = DockStyle.Bottom;
-            txtBeskrivning.Location = new Point(0, 193);
+            txtBeskrivning.Location = new Point(0, 209);
             txtBeskrivning.Multiline = true;
             txtBeskrivning.Name = "txtBeskrivning";
             txtBeskrivning.ReadOnly = true;
-            txtBeskrivning.Size = new Size(380, 102);
+            txtBeskrivning.Size = new Size(380, 86);
             txtBeskrivning.TabIndex = 1;
             // 
             // lstAvsnitt
             // 
-            lstAvsnitt.Dock = DockStyle.Fill;
             lstAvsnitt.FormattingEnabled = true;
             lstAvsnitt.ItemHeight = 15;
             lstAvsnitt.Location = new Point(0, 0);
             lstAvsnitt.Name = "lstAvsnitt";
-            lstAvsnitt.Size = new Size(380, 295);
+            lstAvsnitt.Size = new Size(380, 199);
             lstAvsnitt.TabIndex = 0;
             lstAvsnitt.SelectedIndexChanged += lstAvsnitt_SelectedIndexChanged;
             // 
