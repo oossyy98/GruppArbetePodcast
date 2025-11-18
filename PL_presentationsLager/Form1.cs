@@ -24,7 +24,7 @@ namespace PL_presentationsLager
             rssService = new RssService();
             podcastService = new PodcastService(podcastRepository, rssService);
             kategoriService = new KategoriService(kategoriRepository);
-            
+
 
             urlTimer = new System.Windows.Forms.Timer();
             urlTimer.Interval = 1000;
@@ -361,6 +361,16 @@ namespace PL_presentationsLager
                     txtPodcastNamn.Clear();
                 }
             }
+        }
+
+        private void label6_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void dgvAvsnitt_CellContentClick(object sender, DataGridViewCellEventArgs e)
+        {
+
         }
     }
 
