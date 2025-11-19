@@ -33,7 +33,7 @@
             lstKategorier = new ListBox();
             btnRaderaKategori = new Button();
             btnRaderaPodcast = new Button();
-            button1 = new Button();
+            btnUppdateraPodcast = new Button();
             btnSkapaPodcast = new Button();
             cbKategorier = new ComboBox();
             label4 = new Label();
@@ -43,6 +43,7 @@
             txtPodcastNamn = new TextBox();
             tableLayoutPanel1 = new TableLayoutPanel();
             panel4 = new Panel();
+            btnUppdateraKategori = new Button();
             label1 = new Label();
             panel5 = new Panel();
             panel6 = new Panel();
@@ -97,9 +98,9 @@
             // 
             // btnRaderaKategori
             // 
-            btnRaderaKategori.Location = new Point(199, 65);
+            btnRaderaKategori.Location = new Point(238, 65);
             btnRaderaKategori.Name = "btnRaderaKategori";
-            btnRaderaKategori.Size = new Size(100, 23);
+            btnRaderaKategori.Size = new Size(96, 23);
             btnRaderaKategori.TabIndex = 5;
             btnRaderaKategori.Text = "Radera ";
             btnRaderaKategori.UseVisualStyleBackColor = true;
@@ -107,23 +108,23 @@
             // 
             // btnRaderaPodcast
             // 
-            btnRaderaPodcast.Location = new Point(223, 65);
+            btnRaderaPodcast.Location = new Point(220, 65);
             btnRaderaPodcast.Name = "btnRaderaPodcast";
             btnRaderaPodcast.Size = new Size(96, 23);
             btnRaderaPodcast.TabIndex = 11;
             btnRaderaPodcast.Text = "Radera";
             btnRaderaPodcast.UseVisualStyleBackColor = true;
-            btnRaderaPodcast.Click += button2_Click;
+            btnRaderaPodcast.Click += btnRaderaPodcast_Click;
             // 
-            // button1
+            // btnUppdateraPodcast
             // 
-            button1.Location = new Point(220, 10);
-            button1.Name = "button1";
-            button1.Size = new Size(96, 23);
-            button1.TabIndex = 10;
-            button1.Text = "Uppdatera";
-            button1.UseVisualStyleBackColor = true;
-            button1.Click += button1_Click;
+            btnUppdateraPodcast.Location = new Point(220, 6);
+            btnUppdateraPodcast.Name = "btnUppdateraPodcast";
+            btnUppdateraPodcast.Size = new Size(96, 23);
+            btnUppdateraPodcast.TabIndex = 10;
+            btnUppdateraPodcast.Text = "Uppdatera";
+            btnUppdateraPodcast.UseVisualStyleBackColor = true;
+            btnUppdateraPodcast.Click += btnUppdateraPodcast_Click;
             // 
             // btnSkapaPodcast
             // 
@@ -184,6 +185,7 @@
             txtPodcastNamn.Name = "txtPodcastNamn";
             txtPodcastNamn.Size = new Size(100, 23);
             txtPodcastNamn.TabIndex = 1;
+            txtPodcastNamn.TextChanged += txtPodcastNamn_TextChanged;
             // 
             // tableLayoutPanel1
             // 
@@ -208,6 +210,7 @@
             // 
             // panel4
             // 
+            panel4.Controls.Add(btnUppdateraKategori);
             panel4.Controls.Add(btnRaderaKategori);
             panel4.Controls.Add(btnSkapaKategori);
             panel4.Controls.Add(label1);
@@ -218,6 +221,16 @@
             panel4.Size = new Size(341, 91);
             panel4.TabIndex = 0;
             panel4.Paint += panel4_Paint;
+            // 
+            // btnUppdateraKategori
+            // 
+            btnUppdateraKategori.Location = new Point(238, 23);
+            btnUppdateraKategori.Name = "btnUppdateraKategori";
+            btnUppdateraKategori.Size = new Size(96, 23);
+            btnUppdateraKategori.TabIndex = 12;
+            btnUppdateraKategori.Text = "Uppdatera";
+            btnUppdateraKategori.UseVisualStyleBackColor = true;
+            btnUppdateraKategori.Click += btnUppdateraKategoriNamn_Click;
             // 
             // label1
             // 
@@ -262,7 +275,7 @@
             panel7.Controls.Add(label2);
             panel7.Controls.Add(btnRaderaPodcast);
             panel7.Controls.Add(txtPodcastNamn);
-            panel7.Controls.Add(button1);
+            panel7.Controls.Add(btnUppdateraPodcast);
             panel7.Controls.Add(label4);
             panel7.Controls.Add(cbKategorier);
             panel7.Controls.Add(btnSkapaPodcast);
@@ -301,10 +314,11 @@
             // 
             // lblTitel
             // 
-            lblTitel.Location = new Point(47, 6);
+            lblTitel.Location = new Point(33, 6);
             lblTitel.Name = "lblTitel";
             lblTitel.Size = new Size(200, 23);
             lblTitel.TabIndex = 14;
+            lblTitel.Click += lblTitel_Click;
             // 
             // lblTitelText
             // 
@@ -391,7 +405,7 @@
         private TextBox txtPodcastUrl;
         private Label label3;
         private Button btnRaderaPodcast;
-        private Button button1;
+        private Button btnUppdateraPodcast;
         private Button btnSkapaPodcast;
         private ComboBox cbKategorier;
         private Button btnRaderaKategori;
@@ -411,5 +425,6 @@
         private Label lblPubliceringsdatumText;
         private Label lblPubliceringsdatum;
         private ListBox lstPodcast;
+        private Button btnUppdateraKategori;
     }
 }

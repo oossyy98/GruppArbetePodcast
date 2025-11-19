@@ -62,7 +62,7 @@ namespace PL_presentationsLager
             cbKategorier.DisplayMember = "Namn";
             cbKategorier.ValueMember = "Id";
 
-            
+
             lstKategorier.ClearSelected();
 
         }
@@ -86,7 +86,7 @@ namespace PL_presentationsLager
                 lstPodcast.DisplayMember = "Namn";
                 lstPodcast.ValueMember = "Id";
 
-                
+
                 lstPodcast.ClearSelected();
 
                 // töm avsnittsdelen när kategori byts
@@ -161,7 +161,7 @@ namespace PL_presentationsLager
         }
 
 
-        private async void button2_Click(object sender, EventArgs e)
+        private async void btnRaderaPodcast_Click(object sender, EventArgs e)
         {
             if (lstPodcast.SelectedValue == null)
             {
@@ -182,7 +182,7 @@ namespace PL_presentationsLager
             lstAvsnitt.DataSource = null;
         }
 
-        private async void button1_Click(object sender, EventArgs e)
+        private async void btnUppdateraPodcast_Click(object sender, EventArgs e)
         {
             if (lstPodcast.SelectedItem is not Podcast p)
             {
@@ -311,6 +311,9 @@ namespace PL_presentationsLager
                 lstAvsnitt.DataSource = p.Avsnitt;
                 lstAvsnitt.DisplayMember = "Titel";
 
+                // tar bort instant blå-markering
+                lstAvsnitt.SelectedIndex = -1;
+
                 // töm avsnitts-detaljer
                 lblTitel.Text = "";
                 lblPubliceringsdatum.Text = "";
@@ -330,9 +333,47 @@ namespace PL_presentationsLager
                 lblTitel.Text = a.Titel;
                 lblPubliceringsdatum.Text = a.PubliceringsDatum?.ToString("yyyy-MM-dd");
                 txtBeskrivning.Text = a.Beskrivning;
-
-                lstAvsnitt.ClearSelected();
+                //lstAvsnitt.ClearSelected();
             }
+        }
+
+        private async void btnUppdateraKategoriNamn_Click(object sender, EventArgs e)
+        {
+            if (lstKategorier.SelectedItem is not Kategori valdKategori)
+            {
+                MessageBox.Show("Välj en kategori att redigera.");
+                return;
+            }
+
+            var nyttNamn = txtKategoriNamn.Text.Trim();
+            if (string.IsNullOrWhiteSpace(nyttNamn))
+            {
+                MessageBox.Show("Ange ett nytt kategorinamn.");
+                return;
+            }
+
+            valdKategori.Namn = nyttNamn;
+            var fel = await kategoriService.UppdateraKategoriAsync(valdKategori);
+
+            if (fel != null)
+            {
+                MessageBox.Show(fel);
+                return;
+            }
+
+            txtKategoriNamn.Clear();
+            await LaddaKategorierAsync();
+            MessageBox.Show("Kategori uppdaterad!");
+        }
+
+        private void txtPodcastNamn_TextChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void lblTitel_Click(object sender, EventArgs e)
+        {
+
         }
     }
 
