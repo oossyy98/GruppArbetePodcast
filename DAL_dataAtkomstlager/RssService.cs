@@ -11,41 +11,42 @@ namespace DAL_dataAtkomstlager
 {
     public class RssService
     {
+        private readonly HttpClient enHttpClient;
+
+        public RssService(HttpClient enHttpClient)
+        {
+            this.enHttpClient = enHttpClient;
+        }
         public async Task<List<Avsnitt>> HamtaAvsnittFranRssAsync(string url)
         {
-            return await Task.Run(() =>
+            using Stream dataStrom = await this.enHttpClient.GetStreamAsync(url);
+            using XmlReader minXMLlasare = XmlReader.Create(dataStrom);
+            SyndicationFeed dataFlode = SyndicationFeed.Load(minXMLlasare);
+
+            List<Avsnitt> lista = new List<Avsnitt>();
+
+            foreach (SyndicationItem item in dataFlode.Items)
             {
-                using (var reader = XmlReader.Create(url))
-                {
-                    var feed = SyndicationFeed.Load(reader);
-                    var lista = new List<Avsnitt>();
+                Avsnitt ettAvsnitt = new Avsnitt();
+                ettAvsnitt.Titel = item.Title?.Text;
+                ettAvsnitt.Beskrivning = item.Summary?.Text;
+                ettAvsnitt.PubliceringsDatum = item.PublishDate.DateTime;
 
-                    foreach (var item in feed.Items)
-                    {
-                        lista.Add(new Avsnitt
-                        {
-                            Titel = item.Title?.Text,
-                            Beskrivning = item.Summary?.Text,
-                            PubliceringsDatum = item.PublishDate.UtcDateTime
-                        });
-                    }
+                lista.Add(ettAvsnitt);
+            }
 
-                    return lista;
-                }
-            });
+            return lista;
         }
 
 
         public async Task<string?> HamtaPodcastTitelFranRssAsync(string url)
         {
-            return await Task.Run(() =>
-            {
-                using (var reader = XmlReader.Create(url))
-                {
-                    var feed = SyndicationFeed.Load(reader);
-                    return feed.Title?.Text;
-                }
-            });
+            using Stream dataStrom = await this.enHttpClient.GetStreamAsync(url);
+            using XmlReader minXMLlasare = XmlReader.Create(dataStrom);
+            SyndicationFeed dataFlode = SyndicationFeed.Load(minXMLlasare);
+
+            return dataFlode.Title?.Text;
         }
     }
+
 }

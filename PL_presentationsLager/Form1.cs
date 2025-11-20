@@ -10,6 +10,7 @@ namespace PL_presentationsLager
         private readonly PodcastService podcastService;
         private readonly KategoriService kategoriService;
         private readonly RssService rssService;
+        private readonly HttpClient httpClient;
         private System.Windows.Forms.Timer urlTimer;
 
         public Form1()
@@ -21,7 +22,8 @@ namespace PL_presentationsLager
             var podcastRepository = new PodcastRepository(mongo);
             var kategoriRepository = new KategoriRepository(mongo);
 
-            rssService = new RssService();
+            httpClient = new HttpClient();
+            rssService = new RssService(httpClient);
             podcastService = new PodcastService(podcastRepository, rssService);
             kategoriService = new KategoriService(kategoriRepository);
 
