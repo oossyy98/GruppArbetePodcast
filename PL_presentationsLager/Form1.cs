@@ -169,9 +169,23 @@ namespace PL_presentationsLager
                 return;
             }
 
-            var id = lstPodcast.SelectedValue.ToString();
+            // Bekräftelsedialog
+            var podcastNamn = ((Podcast)lstPodcast.SelectedItem).Namn;
+            var resultat = MessageBox.Show(
+                $"Är du säker på att du vill radera podcasten '{podcastNamn}'?",
+                "Bekräfta radering",
+                MessageBoxButtons.YesNo,
+                MessageBoxIcon.Warning
+            );
 
+            if (resultat != DialogResult.Yes)
+            {
+                return;
+            }
+
+            var id = lstPodcast.SelectedValue.ToString();
             var fel = await podcastService.RaderaPodcastAsync(id);
+
             if (fel != null)
             {
                 MessageBox.Show(fel);
@@ -180,6 +194,8 @@ namespace PL_presentationsLager
 
             lstKategorier_SelectedIndexChanged(null, null);
             lstAvsnitt.DataSource = null;
+
+            MessageBox.Show("Podcast raderad!");
         }
 
         private async void btnUppdateraPodcast_Click(object sender, EventArgs e)
@@ -233,6 +249,20 @@ namespace PL_presentationsLager
                 return;
             }
 
+            // Bekräftelsedialog
+            var kategoriNamn = ((Kategori)lstKategorier.SelectedItem).Namn;
+            var resultat = MessageBox.Show(
+                $"Är du säker på att du vill radera kategorin '{kategoriNamn}'?",
+                "Bekräfta radering",
+                MessageBoxButtons.YesNo,
+                MessageBoxIcon.Warning
+            );
+
+            if (resultat != DialogResult.Yes)
+            {
+                return;
+            }
+
             var id = lstKategorier.SelectedValue.ToString();
             var fel = await kategoriService.RaderaKategoriAsync(id);
 
@@ -243,9 +273,10 @@ namespace PL_presentationsLager
             }
 
             await LaddaKategorierAsync();
-
             lstPodcast.DataSource = null;
             lstAvsnitt.DataSource = null;
+
+            MessageBox.Show("Kategori raderad!");
         }
 
         private async void UrlTimer_Tick(object sender, EventArgs e)
