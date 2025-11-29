@@ -70,11 +70,6 @@ namespace PL_presentationsLager
         }
 
 
-        private void panel2_Paint(object sender, PaintEventArgs e)
-        {
-
-        }
-
         private async void lstKategorier_SelectedIndexChanged(object sender, EventArgs e)
         {
             if (lstKategorier.SelectedItem is Kategori k)
@@ -97,16 +92,6 @@ namespace PL_presentationsLager
                 lblPubliceringsdatum.Text = "";
                 txtBeskrivning.Text = "";
             }
-        }
-
-        private void panel1_Paint(object sender, PaintEventArgs e)
-        {
-
-        }
-
-        private void dgvPodcasts_CellContentClick(object sender, DataGridViewCellEventArgs e)
-        {
-
         }
 
         private async void btnSkapaKategori_Click(object sender, EventArgs e)
@@ -319,15 +304,6 @@ namespace PL_presentationsLager
             }
         }
 
-        private void label6_Click(object sender, EventArgs e)
-        {
-
-        }
-
-        private void dgvAvsnitt_CellContentClick(object sender, DataGridViewCellEventArgs e)
-        {
-
-        }
 
 
         private void lstPodcast_SelectedIndexChanged(object sender, EventArgs e)
