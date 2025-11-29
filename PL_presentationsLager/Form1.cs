@@ -69,12 +69,6 @@ namespace PL_presentationsLager
 
         }
 
-
-        private void panel2_Paint(object sender, PaintEventArgs e)
-        {
-
-        }
-
         private async void lstKategorier_SelectedIndexChanged(object sender, EventArgs e)
         {
             if (lstKategorier.SelectedItem is Kategori k)
@@ -99,15 +93,6 @@ namespace PL_presentationsLager
             }
         }
 
-        private void panel1_Paint(object sender, PaintEventArgs e)
-        {
-
-        }
-
-        private void dgvPodcasts_CellContentClick(object sender, DataGridViewCellEventArgs e)
-        {
-
-        }
 
         private async void btnSkapaKategori_Click(object sender, EventArgs e)
         {
@@ -223,25 +208,6 @@ namespace PL_presentationsLager
         }
 
 
-
-        //LADDA KATEGORIER METOD
-        private async void btnHamtaKategorier_Click(object sender, EventArgs e)
-        {
-            await LaddaKategoriListaAsync();
-
-
-        }
-
-        //FYLLA LISTAN
-        private async Task LaddaKategoriListaAsync()
-        {
-            var lista = await kategoriService.HamtaAllaKategorierAsync();
-            lstKategorier.DataSource = null;
-            lstKategorier.DataSource = lista;
-            lstKategorier.DisplayMember = "Namn";
-            lstKategorier.ValueMember = "Id";
-        }
-
         //RADERA KATEGORI KNAPP
         private async void btnRaderaKategori_Click(object sender, EventArgs e)
         {
@@ -319,16 +285,6 @@ namespace PL_presentationsLager
             }
         }
 
-        private void label6_Click(object sender, EventArgs e)
-        {
-
-        }
-
-        private void dgvAvsnitt_CellContentClick(object sender, DataGridViewCellEventArgs e)
-        {
-
-        }
-
 
         private void lstPodcast_SelectedIndexChanged(object sender, EventArgs e)
         {
@@ -354,10 +310,6 @@ namespace PL_presentationsLager
             }
         }
 
-        private void panel4_Paint(object sender, PaintEventArgs e)
-        {
-
-        }
 
         private void lstAvsnitt_SelectedIndexChanged(object sender, EventArgs e)
         {
@@ -404,10 +356,6 @@ namespace PL_presentationsLager
 
         }
 
-        private void lblTitel_Click(object sender, EventArgs e)
-        {
-
-        }
     }
 
 }
