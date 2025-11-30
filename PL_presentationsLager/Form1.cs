@@ -43,208 +43,259 @@ namespace PL_presentationsLager
 
         private async void Form1_Load(object sender, EventArgs e)
         {
-            await LaddaKategorierAsync();
+            try
+            {
+                await LaddaKategorierAsync();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Ett fel uppstod: {ex.Message}");
+            }
 
         }
 
         //kategori hantering
         private async Task LaddaKategorierAsync()
         {
-            var lista = await kategoriService.HamtaAllaKategorierAsync();
+            try
+            {
+                var lista = await kategoriService.HamtaAllaKategorierAsync();
 
-            // fyll lista till vänster
-            lstKategorier.DataSource = null;
-            lstKategorier.DataSource = lista;
-            lstKategorier.DisplayMember = "Namn";
-            lstKategorier.ValueMember = "Id";
+                lstKategorier.DataSource = null;
+                lstKategorier.DataSource = lista;
+                lstKategorier.DisplayMember = "Namn";
+                lstKategorier.ValueMember = "Id";
 
-            // fyll comboboxen i mitten
-            cbKategorier.DataSource = null;
-            cbKategorier.DataSource = lista;
-            cbKategorier.DisplayMember = "Namn";
-            cbKategorier.ValueMember = "Id";
+                cbKategorier.DataSource = null;
+                cbKategorier.DataSource = lista;
+                cbKategorier.DisplayMember = "Namn";
+                cbKategorier.ValueMember = "Id";
 
-
-            lstKategorier.ClearSelected();
+                lstKategorier.ClearSelected();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Ett fel uppstod: {ex.Message}");
+            }
 
         }
 
         private async void lstKategorier_SelectedIndexChanged(object sender, EventArgs e)
         {
-            if (lstKategorier.SelectedItem is Kategori k)
+            try
             {
-                var alla = await podcastService.HamtaAllaPodcastsAsync();
+                if (lstKategorier.SelectedItem is Kategori k)
+                {
+                    var alla = await podcastService.HamtaAllaPodcastsAsync();
+                    var filtrerade = alla.Where(p => p.KategoriId == k.Id).ToList();
 
-                var filtrerade = alla.Where(p => p.KategoriId == k.Id).ToList();
+                    lstPodcast.DataSource = null;
+                    lstPodcast.DataSource = filtrerade;
+                    lstPodcast.DisplayMember = "Namn";
+                    lstPodcast.ValueMember = "Id";
 
-                lstPodcast.DataSource = null;
-                lstPodcast.DataSource = filtrerade;
-                lstPodcast.DisplayMember = "Namn";
-                lstPodcast.ValueMember = "Id";
+                    lstPodcast.ClearSelected();
 
-
-                lstPodcast.ClearSelected();
-
-                // töm avsnittsdelen när kategori byts
-                lstAvsnitt.DataSource = null;
-                lblTitel.Text = "";
-                lblPubliceringsdatum.Text = "";
-                txtBeskrivning.Text = "";
+                    lstAvsnitt.DataSource = null;
+                    lblTitel.Text = "";
+                    lblPubliceringsdatum.Text = "";
+                    txtBeskrivning.Text = "";
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Ett fel uppstod: {ex.Message}");
             }
         }
 
 
         private async void btnSkapaKategori_Click(object sender, EventArgs e)
         {
-            var kategori = new Kategori();
-            kategori.Namn = txtKategoriNamn.Text.Trim();
-
-            var fel = await kategoriService.SkapaKategoriAsync(kategori);
-
-            if (fel != null)
+            try
             {
-                MessageBox.Show(fel);
-                return;
-            }
+                // Skapa objekt från formuläret
+                var kategori = new Kategori();
+                kategori.Namn = txtKategoriNamn.Text.Trim();
 
-            MessageBox.Show("Kategori skapad!");
-            await LaddaKategorierAsync();
+                // Anropa BL (BL validerar!)
+                var fel = await kategoriService.SkapaKategoriAsync(kategori);
+
+                if (fel != null)
+                {
+                    MessageBox.Show(fel);
+                    return;
+                }
+
+                MessageBox.Show("Kategori skapad!");
+                txtKategoriNamn.Clear();
+                await LaddaKategorierAsync();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Ett fel uppstod: {ex.Message}");
+            }
         }
 
         private async void btnSkapaPodcast_Click(object sender, EventArgs e)
         {
-            if (cbKategorier.SelectedValue == null)
+            try
             {
-                MessageBox.Show("Välj en kategori.");
-                return;
+                if (cbKategorier.SelectedValue == null)
+                {
+                    MessageBox.Show("Välj en kategori.");
+                    return;
+                }
+
+                string url = txtPodcastUrl.Text.Trim();
+
+                // HÄMTA RSS + avsnitt
+                var podcast = await podcastService.LasInRssAsync(url);
+                if (podcast == null)
+                {
+                    MessageBox.Show("Kunde inte läsa RSS.");
+                    return;
+                }
+
+                // Lägg till kategori
+                podcast.KategoriId = cbKategorier.SelectedValue.ToString();
+
+                // Spara i databasen
+                var fel = await podcastService.SkapaPodcastAsync(podcast);
+                if (fel != null)
+                {
+                    MessageBox.Show(fel);
+                    return;
+                }
+
+                txtPodcastNamn.Clear();
+                txtPodcastUrl.Clear();
+
+                // Uppdatera listan
+                lstKategorier_SelectedIndexChanged(null, null);
             }
-
-            string url = txtPodcastUrl.Text.Trim();
-
-            // HÄMTA RSS + avsnitt
-            var podcast = await podcastService.LasInRssAsync(url);
-            if (podcast == null)
+            catch (Exception ex)
             {
-                MessageBox.Show("Kunde inte läsa RSS.");
-                return;
+                MessageBox.Show($"Ett fel uppstod: {ex.Message}");
             }
-
-            // Lägg till kategori
-            podcast.KategoriId = cbKategorier.SelectedValue.ToString();
-
-            // Spara i databasen
-            var fel = await podcastService.SkapaPodcastAsync(podcast);
-            if (fel != null)
-            {
-                MessageBox.Show(fel);
-                return;
-            }
-
-            txtPodcastNamn.Clear();
-            txtPodcastUrl.Clear();
-
-            // Uppdatera listan
-            lstKategorier_SelectedIndexChanged(null, null);
         }
 
 
         private async void btnRaderaPodcast_Click(object sender, EventArgs e)
         {
-            if (lstPodcast.SelectedValue == null)
+            try
             {
-                MessageBox.Show("Välj en podcast.");
-                return;
+                if (lstPodcast.SelectedValue == null)
+                {
+                    MessageBox.Show("Välj en podcast.");
+                    return;
+                }
+
+                var podcastNamn = ((Podcast)lstPodcast.SelectedItem).Namn;
+                var resultat = MessageBox.Show(
+                    $"Är du säker på att du vill radera podcasten '{podcastNamn}'?", 
+                    "Bekräfta radering", MessageBoxButtons.YesNo, MessageBoxIcon.Warning
+                );
+
+                if (resultat != DialogResult.Yes)
+                {
+                    return;
+                }
+
+                var id = lstPodcast.SelectedValue.ToString();
+                var fel = await podcastService.RaderaPodcastAsync(id);
+
+                if (fel != null)
+                {
+                    MessageBox.Show(fel);
+                    return;
+                }
+
+                lstKategorier_SelectedIndexChanged(null, null);
+                lstAvsnitt.DataSource = null;
+                MessageBox.Show("Podcast raderad!");
             }
-
-            // Bekräftelsedialog
-            var podcastNamn = ((Podcast)lstPodcast.SelectedItem).Namn;
-            var resultat = MessageBox.Show(
-                $"Är du säker på att du vill radera podcasten '{podcastNamn}'?",
-                "Bekräfta radering",
-                MessageBoxButtons.YesNo,
-                MessageBoxIcon.Warning
-            );
-
-            if (resultat != DialogResult.Yes)
+            catch (Exception ex)
             {
-                return;
+                MessageBox.Show($"Ett fel uppstod: {ex.Message}");
             }
-
-            var id = lstPodcast.SelectedValue.ToString();
-            var fel = await podcastService.RaderaPodcastAsync(id);
-
-            if (fel != null)
-            {
-                MessageBox.Show(fel);
-                return;
-            }
-
-            lstKategorier_SelectedIndexChanged(null, null);
-            lstAvsnitt.DataSource = null;
-
-            MessageBox.Show("Podcast raderad!");
         }
 
         private async void btnUppdateraPodcast_Click(object sender, EventArgs e)
         {
-            if (lstPodcast.SelectedItem is not Podcast p)
+            try
             {
-                MessageBox.Show("Välj en podcast.");
-                return;
+                if (lstPodcast.SelectedItem is not Podcast p)
+                {
+                    MessageBox.Show("Välj en podcast.");
+                    return;
+                }
+
+                // Uppdatera från formuläret
+                p.Namn = txtPodcastNamn.Text.Trim();
+                p.Url = txtPodcastUrl.Text.Trim();
+                p.KategoriId = cbKategorier.SelectedValue?.ToString();
+
+                // Anropa BL
+                var fel = await podcastService.UppdateraPodcastAsync(p);
+
+                if (fel != null)
+                {
+                    MessageBox.Show(fel);
+                    return;
+                }
+
+                MessageBox.Show("Podcast uppdaterad!");
+                lstKategorier_SelectedIndexChanged(null, null);
             }
-
-            p.Namn = txtPodcastNamn.Text.Trim();
-            p.Url = txtPodcastUrl.Text.Trim();
-            p.KategoriId = cbKategorier.SelectedValue?.ToString();
-
-            var fel = await podcastService.UppdateraPodcastAsync(p);
-            if (fel != null)
+            catch (Exception ex)
             {
-                MessageBox.Show(fel);
-                return;
+                MessageBox.Show($"Ett fel uppstod: {ex.Message}");
             }
-
-            lstKategorier_SelectedIndexChanged(null, null);
         }
 
 
         //RADERA KATEGORI KNAPP
         private async void btnRaderaKategori_Click(object sender, EventArgs e)
         {
-            if (lstKategorier.SelectedValue == null)
+            try
             {
-                MessageBox.Show("Välj en kategori.");
-                return;
+                if (lstKategorier.SelectedValue == null)
+                {
+                    MessageBox.Show("Välj en kategori.");
+                    return;
+                }
+
+                var kategoriNamn = ((Kategori)lstKategorier.SelectedItem).Namn;
+                var resultat = MessageBox.Show(
+                    $"Är du säker på att du vill radera kategorin '{kategoriNamn}'?",
+                    "Bekräfta radering",
+                    MessageBoxButtons.YesNo,
+                    MessageBoxIcon.Warning
+                );
+
+                if (resultat != DialogResult.Yes)
+                {
+                    return;
+                }
+
+                var id = lstKategorier.SelectedValue.ToString();
+                var fel = await kategoriService.RaderaKategoriAsync(id);
+
+                if (fel != null)
+                {
+                    MessageBox.Show(fel);
+                    return;
+                }
+
+                await LaddaKategorierAsync();
+                lstPodcast.DataSource = null;
+                lstAvsnitt.DataSource = null;
+                MessageBox.Show("Kategori raderad!");
             }
-
-            // Bekräftelsedialog
-            var kategoriNamn = ((Kategori)lstKategorier.SelectedItem).Namn;
-            var resultat = MessageBox.Show(
-                $"Är du säker på att du vill radera kategorin '{kategoriNamn}'?",
-                "Bekräfta radering",
-                MessageBoxButtons.YesNo,
-                MessageBoxIcon.Warning
-            );
-
-            if (resultat != DialogResult.Yes)
+            catch (Exception ex)
             {
-                return;
+                MessageBox.Show($"Ett fel uppstod: {ex.Message}");
             }
-
-            var id = lstKategorier.SelectedValue.ToString();
-            var fel = await kategoriService.RaderaKategoriAsync(id);
-
-            if (fel != null)
-            {
-                MessageBox.Show(fel);
-                return;
-            }
-
-            await LaddaKategorierAsync();
-            lstPodcast.DataSource = null;
-            lstAvsnitt.DataSource = null;
-
-            MessageBox.Show("Kategori raderad!");
         }
 
         private async void UrlTimer_Tick(object sender, EventArgs e)
@@ -324,31 +375,34 @@ namespace PL_presentationsLager
 
         private async void btnUppdateraKategoriNamn_Click(object sender, EventArgs e)
         {
-            if (lstKategorier.SelectedItem is not Kategori valdKategori)
+            try
             {
-                MessageBox.Show("Välj en kategori att redigera.");
-                return;
-            }
+                if (lstKategorier.SelectedItem is not Kategori valdKategori)
+                {
+                    MessageBox.Show("Välj en kategori.");
+                    return;
+                }
 
-            var nyttNamn = txtKategoriNamn.Text.Trim();
-            if (string.IsNullOrWhiteSpace(nyttNamn))
+                // Uppdatera från formuläret
+                valdKategori.Namn = txtKategoriNamn.Text.Trim();
+
+                // Anropa BL
+                var fel = await kategoriService.UppdateraKategoriAsync(valdKategori);
+
+                if (fel != null)
+                {
+                    MessageBox.Show(fel);
+                    return;
+                }
+
+                txtKategoriNamn.Clear();
+                await LaddaKategorierAsync();
+                MessageBox.Show("Kategori uppdaterad!");
+            }
+            catch (Exception ex)
             {
-                MessageBox.Show("Ange ett nytt kategorinamn.");
-                return;
+                MessageBox.Show($"Ett fel uppstod: {ex.Message}");
             }
-
-            valdKategori.Namn = nyttNamn;
-            var fel = await kategoriService.UppdateraKategoriAsync(valdKategori);
-
-            if (fel != null)
-            {
-                MessageBox.Show(fel);
-                return;
-            }
-
-            txtKategoriNamn.Clear();
-            await LaddaKategorierAsync();
-            MessageBox.Show("Kategori uppdaterad!");
         }
 
         private void txtPodcastNamn_TextChanged(object sender, EventArgs e)
