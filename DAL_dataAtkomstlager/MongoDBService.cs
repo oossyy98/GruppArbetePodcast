@@ -11,6 +11,7 @@ namespace DAL_dataAtkomstlager
     public class MongoDBService
     {
         private readonly IMongoDatabase databas;
+        private readonly MongoClient klient;
 
         public MongoDBService()
         {
@@ -18,11 +19,12 @@ namespace DAL_dataAtkomstlager
             databas = klient.GetDatabase("OruMongoDB");
         }
 
-        public IMongoCollection<Podcast> PodcastCollection =>
-    databas.GetCollection<Podcast>("Podcasts");
+        public MongoClient Client => klient;
 
-        public IMongoCollection<Kategori> KategoriCollection =>
-            databas.GetCollection<Kategori>("Kategorier");
+
+        public IMongoCollection<Podcast> PodcastCollection => databas.GetCollection<Podcast>("Podcasts");
+
+        public IMongoCollection<Kategori> KategoriCollection => databas.GetCollection<Kategori>("Kategorier");
 
     }
 }

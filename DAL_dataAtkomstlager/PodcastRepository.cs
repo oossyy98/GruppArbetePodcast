@@ -7,19 +7,34 @@ namespace DAL_dataAtkomstlager
 {
     public class PodcastRepository : IRepository<Podcast>
     {
-        private readonly IMongoCollection<Podcast> collection; // kolla vad denna gör
+        private readonly IMongoCollection<Podcast> collection;
+        private readonly MongoDBService service;
 
         public PodcastRepository(MongoDBService service)
         {
+            this.service = service;
             collection = service.PodcastCollection;
         }
 
-        //CREATE
+        // CREATE
         public async Task AddAsync(Podcast podcast)
         {
-            await collection.InsertOneAsync(podcast);    
+            using var session = service.Client.StartSession();
+            session.StartTransaction();
+
+            try
+            {
+                await collection.InsertOneAsync(session, podcast);
+                await session.CommitTransactionAsync();
+            }
+            catch
+            {
+                await session.AbortTransactionAsync();
+                throw;
+            }
         }
-        //READ ALLA
+
+        // READ ALL
         public async Task<List<Podcast>> GetAllAsync()
         {
             try
@@ -32,7 +47,8 @@ namespace DAL_dataAtkomstlager
                 return new List<Podcast>();
             }
         }
-        //READ EN
+
+        // READ ONE
         public async Task<Podcast?> GetByIdAsync(string podcastId)
         {
             try
@@ -45,34 +61,57 @@ namespace DAL_dataAtkomstlager
                 return null;
             }
         }
-        //UPDATE
+
+        // UPDATE
         public async Task<bool> UpdateAsync(Podcast uppdateradPodcast)
         {
+            using var session = service.Client.StartSession();
+            session.StartTransaction();
+
             try
             {
                 var filter = Builders<Podcast>.Filter.Eq(p => p.Id, uppdateradPodcast.Id);
-                var resultat = await collection.ReplaceOneAsync(filter, uppdateradPodcast);
-                if (resultat.MatchedCount == 0) return false;
-                if (resultat.ModifiedCount == 0) return false;
+                var resultat = await collection.ReplaceOneAsync(session, filter, uppdateradPodcast);
+
+                if (resultat.MatchedCount == 0)
+                {
+                    await session.AbortTransactionAsync();
+                    return false;
+                }
+
+                await session.CommitTransactionAsync();
                 return true;
             }
             catch
             {
+                await session.AbortTransactionAsync();
                 return false;
             }
         }
-        //DELETE
+
+        // DELETE
         public async Task<bool> DeleteAsync(string podcastId)
         {
+            using var session = service.Client.StartSession();
+            session.StartTransaction();
+
             try
             {
                 var filter = Builders<Podcast>.Filter.Eq(p => p.Id, podcastId);
-                var resultat = await collection.DeleteOneAsync(filter);
-                if (resultat.DeletedCount == 0) return false;
+                var resultat = await collection.DeleteOneAsync(session, filter);
+
+                if (resultat.DeletedCount == 0)
+                {
+                    await session.AbortTransactionAsync();
+                    return false;
+                }
+
+                await session.CommitTransactionAsync();
                 return true;
             }
             catch
             {
+                await session.AbortTransactionAsync();
                 return false;
             }
         }

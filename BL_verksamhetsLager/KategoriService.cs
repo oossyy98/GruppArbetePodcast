@@ -18,11 +18,15 @@ namespace BL_verksamhetsLager
         // CREATE
         public async Task<string?> SkapaKategoriAsync(Kategori kategori)
         {
+            if (kategori == null)
+                return "Ogiltig kategori.";
+
             if (string.IsNullOrWhiteSpace(kategori.Namn))
                 return "Kategori måste ha ett namn.";
 
             var alla = await repository.GetAllAsync();
-            if (alla.Any(k => k.Namn.Equals(kategori.Namn, System.StringComparison.OrdinalIgnoreCase)))
+
+            if (alla.Any(k => k.Namn.ToLower() == kategori.Namn.ToLower()))
                 return "En kategori med detta namn finns redan.";
 
             await repository.AddAsync(kategori);
@@ -32,41 +36,49 @@ namespace BL_verksamhetsLager
         // READ ALL
         public async Task<List<Kategori>> HamtaAllaKategorierAsync()
         {
-            var lista = await repository.GetAllAsync();
-            return lista ?? new List<Kategori>();
+            return await repository.GetAllAsync() ?? new List<Kategori>();
         }
 
         // READ ONE
-        public async Task<Kategori?> HamtaKategoriAsync(string kategoriId)
+        public async Task<Kategori?> HamtaKategoriAsync(string id)
         {
-            if (string.IsNullOrWhiteSpace(kategoriId))
+            if (string.IsNullOrWhiteSpace(id))
                 return null;
 
-            return await repository.GetByIdAsync(kategoriId);
+            return await repository.GetByIdAsync(id);
         }
 
         // UPDATE
-        public async Task<string?> UppdateraKategoriAsync(Kategori uppdateradKategori)
+        public async Task<string?> UppdateraKategoriAsync(Kategori kategori)
         {
-            if (string.IsNullOrWhiteSpace(uppdateradKategori.Namn))
+            if (kategori == null)
+                return "Ogiltig kategori.";
+
+            if (string.IsNullOrWhiteSpace(kategori.Namn))
                 return "Kategori måste ha ett namn.";
 
-            var original = await repository.GetByIdAsync(uppdateradKategori.Id);
-            if (original == null)
+            var befintlig = await repository.GetByIdAsync(kategori.Id);
+            if (befintlig == null)
                 return "Kategorin finns inte.";
 
-            await repository.UpdateAsync(uppdateradKategori);
+            var lyckades = await repository.UpdateAsync(kategori);
+            if (!lyckades)
+                return "Kategorin kunde inte uppdateras.";
+
             return null;
         }
 
         // DELETE
-        public async Task<string?> RaderaKategoriAsync(string kategoriId)
+        public async Task<string?> RaderaKategoriAsync(string id)
         {
-            var kategori = await repository.GetByIdAsync(kategoriId);
-            if (kategori == null)
+            var befintlig = await repository.GetByIdAsync(id);
+            if (befintlig == null)
                 return "Kategorin finns inte.";
 
-            await repository.DeleteAsync(kategoriId);
+            var lyckades = await repository.DeleteAsync(id);
+            if (!lyckades)
+                return "Kategorin kunde inte raderas.";
+
             return null;
         }
     }
