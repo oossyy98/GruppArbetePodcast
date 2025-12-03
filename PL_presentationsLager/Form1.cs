@@ -286,10 +286,6 @@ namespace PL_presentationsLager
                     return;
                 }
 
-                if (!string.IsNullOrWhiteSpace(txtPodcastNamn.Text))
-                    podcast.Namn = txtPodcastNamn.Text.Trim();
-
-
                 podcast.KategoriId = cbKategorier.SelectedValue.ToString();
 
                 var fel = await podcastService.SkapaPodcastAsync(podcast);
@@ -460,10 +456,6 @@ namespace PL_presentationsLager
                 if (namn != null)
                 {
                     txtPodcastNamn.Text = namn;
-                    var avsnitt = await rssService.HamtaAvsnittFranRssAsync(url);
-                    lstAvsnitt.DataSource = null;
-                    lstAvsnitt.DataSource = avsnitt;
-                    lstAvsnitt.DisplayMember = "Titel";
                 }
                 else
                 {
