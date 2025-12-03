@@ -74,13 +74,19 @@ namespace PL_presentationsLager
             {
                 var lista = await kategoriService.HamtaAllaKategorierAsync();
 
+                
                 lstKategorier.DataSource = null;
                 lstKategorier.DataSource = lista;
                 lstKategorier.DisplayMember = "Namn";
                 lstKategorier.ValueMember = "Id";
 
+                
+                var listaCopy = lista
+                    .Select(k => new Kategori { Id = k.Id, Namn = k.Namn })
+                    .ToList();
+
                 cbKategorier.DataSource = null;
-                cbKategorier.DataSource = lista;
+                cbKategorier.DataSource = listaCopy;
                 cbKategorier.DisplayMember = "Namn";
                 cbKategorier.ValueMember = "Id";
 
@@ -286,6 +292,13 @@ namespace PL_presentationsLager
                     return;
                 }
 
+
+                if (!string.IsNullOrWhiteSpace(txtPodcastNamn.Text))
+                {
+                    podcast.Namn = txtPodcastNamn.Text.Trim();
+                }
+
+
                 podcast.KategoriId = cbKategorier.SelectedValue.ToString();
 
                 var fel = await podcastService.SkapaPodcastAsync(podcast);
@@ -442,7 +455,7 @@ namespace PL_presentationsLager
             if (string.IsNullOrWhiteSpace(url))
             {
                 txtPodcastNamn.Clear();
-                lstAvsnitt.DataSource = null;   // rensa avsnitt också
+                lstAvsnitt.DataSource = null;
                 return;
             }
 
@@ -453,23 +466,24 @@ namespace PL_presentationsLager
 
             try
             {
-                // Hämta titel från RSS
+
                 var namn = await rssService.HamtaPodcastTitelFranRssAsync(url);
 
                 if (namn != null)
                 {
-                    txtPodcastNamn.Text = namn;
 
-                    // ? HÄMTA OCH VISA AVSNITT — DETTA VAR DET DU SAKNADE ?
-                    var avsnitt = await rssService.HamtaAvsnittFranRssAsync(url);
-                    lstAvsnitt.DataSource = null;
-                    lstAvsnitt.DataSource = avsnitt;
-                    lstAvsnitt.DisplayMember = "Titel";
+                    if (string.IsNullOrWhiteSpace(txtPodcastNamn.Text))
+                    {
+                        txtPodcastNamn.Text = namn;
+                    }
                 }
                 else
                 {
-                    txtPodcastNamn.Clear();
-                    lstAvsnitt.DataSource = null;
+
+                    if (string.IsNullOrWhiteSpace(txtPodcastNamn.Text))
+                    {
+                        txtPodcastNamn.Clear();
+                    }
                 }
             }
             catch
@@ -483,6 +497,56 @@ namespace PL_presentationsLager
         private void txtPodcastNamn_TextChanged(object sender, EventArgs e)
         {
 
+        }
+
+        private void cbKategorier_SelectedIndexChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void cbKategorier_SelectedIndexChanged_1(object sender, EventArgs e)
+        {
+
+        }
+
+        private async void btnFlyttaPodcast_Click(object sender, EventArgs e)
+        {
+            if (lstPodcast.SelectedItem is not Podcast valdPodcast)
+            {
+                MessageBox.Show("Välj en podcast du vill flytta.");
+                return;
+            }
+
+            if (cbKategorier.SelectedValue == null)
+            {
+                MessageBox.Show("Välj en kategori att flytta till.");
+                return;
+            }
+
+            string nyKategoriId = cbKategorier.SelectedValue.ToString();
+
+            
+            if (valdPodcast.KategoriId == nyKategoriId)
+            {
+                MessageBox.Show("Podcasten är redan i den kategorin.");
+                return;
+            }
+
+            
+            valdPodcast.KategoriId = nyKategoriId;
+
+            var fel = await podcastService.UppdateraPodcastAsync(valdPodcast);
+
+            if (fel != null)
+            {
+                MessageBox.Show(fel);
+                return;
+            }
+
+            MessageBox.Show("Podcasten flyttades.");
+
+            
+            await LaddaPodcastsAsync();
         }
     }
 }

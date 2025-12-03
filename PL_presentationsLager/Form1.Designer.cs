@@ -35,8 +35,6 @@
             btnRaderaPodcast = new Button();
             btnUppdateraPodcast = new Button();
             btnSkapaPodcast = new Button();
-            cbKategorier = new ComboBox();
-            label4 = new Label();
             txtPodcastUrl = new TextBox();
             label3 = new Label();
             label2 = new Label();
@@ -49,6 +47,9 @@
             panel6 = new Panel();
             lstPodcast = new ListBox();
             panel7 = new Panel();
+            btnFlyttaPodcast = new Button();
+            label4 = new Label();
+            cbKategorier = new ComboBox();
             panel1 = new Panel();
             lblPubliceringsdatum = new Label();
             lblPubliceringsdatumText = new Label();
@@ -135,23 +136,6 @@
             btnSkapaPodcast.Text = "Lägg till podcast";
             btnSkapaPodcast.UseVisualStyleBackColor = true;
             btnSkapaPodcast.Click += btnSkapaPodcast_Click;
-            // 
-            // cbKategorier
-            // 
-            cbKategorier.FormattingEnabled = true;
-            cbKategorier.Location = new Point(101, 39);
-            cbKategorier.Name = "cbKategorier";
-            cbKategorier.Size = new Size(100, 23);
-            cbKategorier.TabIndex = 8;
-            // 
-            // label4
-            // 
-            label4.AutoSize = true;
-            label4.Location = new Point(9, 42);
-            label4.Name = "label4";
-            label4.Size = new Size(54, 15);
-            label4.TabIndex = 7;
-            label4.Text = "Kategori:";
             // 
             // txtPodcastUrl
             // 
@@ -271,6 +255,7 @@
             // 
             // panel7
             // 
+            panel7.Controls.Add(btnFlyttaPodcast);
             panel7.Controls.Add(label2);
             panel7.Controls.Add(btnRaderaPodcast);
             panel7.Controls.Add(txtPodcastNamn);
@@ -283,6 +268,33 @@
             panel7.Name = "panel7";
             panel7.Size = new Size(319, 91);
             panel7.TabIndex = 3;
+            // 
+            // btnFlyttaPodcast
+            // 
+            btnFlyttaPodcast.Location = new Point(220, 38);
+            btnFlyttaPodcast.Name = "btnFlyttaPodcast";
+            btnFlyttaPodcast.Size = new Size(96, 23);
+            btnFlyttaPodcast.TabIndex = 12;
+            btnFlyttaPodcast.Text = "Flytta";
+            btnFlyttaPodcast.UseVisualStyleBackColor = true;
+            btnFlyttaPodcast.Click += btnFlyttaPodcast_Click;
+            // 
+            // label4
+            // 
+            label4.AutoSize = true;
+            label4.Location = new Point(9, 42);
+            label4.Name = "label4";
+            label4.Size = new Size(85, 15);
+            label4.TabIndex = 7;
+            label4.Text = "Flytta kategori:";
+            // 
+            // cbKategorier
+            // 
+            cbKategorier.FormattingEnabled = true;
+            cbKategorier.Location = new Point(101, 39);
+            cbKategorier.Name = "cbKategorier";
+            cbKategorier.Size = new Size(100, 23);
+            cbKategorier.TabIndex = 8;
             // 
             // panel1
             // 
@@ -365,7 +377,6 @@
             panel8.Name = "panel8";
             panel8.Size = new Size(1058, 74);
             panel8.TabIndex = 9;
-            
             // 
             // Form1
             // 
@@ -400,13 +411,11 @@
         private ListBox lstKategorier;
         private Label label2;
         private TextBox txtPodcastNamn;
-        private Label label4;
         private TextBox txtPodcastUrl;
         private Label label3;
         private Button btnRaderaPodcast;
         private Button btnUppdateraPodcast;
         private Button btnSkapaPodcast;
-        private ComboBox cbKategorier;
         private Button btnRaderaKategori;
         private TableLayoutPanel tableLayoutPanel1;
         private Panel panel8;
@@ -425,5 +434,8 @@
         private Label lblPubliceringsdatum;
         private ListBox lstPodcast;
         private Button btnUppdateraKategori;
+        private Label label4;
+        private ComboBox cbKategorier;
+        private Button btnFlyttaPodcast;
     }
 }

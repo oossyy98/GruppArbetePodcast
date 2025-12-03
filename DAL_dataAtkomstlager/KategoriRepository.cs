@@ -1,5 +1,6 @@
-﻿using MongoDB.Driver;
-using Models;
+﻿using Models;
+using MongoDB.Bson;
+using MongoDB.Driver;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -92,26 +93,19 @@ namespace DAL_dataAtkomstlager
         // DELETE
         public async Task<bool> DeleteAsync(string kategoriId)
         {
-            using var session = service.Client.StartSession();
-            session.StartTransaction();
-
             try
             {
-                var filter = Builders<Kategori>.Filter.Eq(k => k.Id, kategoriId);
-                var resultat = await collection.DeleteOneAsync(session, filter);
-
-                if (resultat.DeletedCount == 0)
-                {
-                    await session.AbortTransactionAsync();
+                if (!ObjectId.TryParse(kategoriId, out ObjectId oid))
                     return false;
-                }
 
-                await session.CommitTransactionAsync();
-                return true;
+                var filter = Builders<Kategori>.Filter.Eq("_id", oid);
+
+                var resultat = await collection.DeleteOneAsync(filter);
+
+                return resultat.DeletedCount > 0;
             }
             catch
             {
-                await session.AbortTransactionAsync();
                 return false;
             }
         }

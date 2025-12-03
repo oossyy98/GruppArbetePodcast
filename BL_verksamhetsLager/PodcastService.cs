@@ -40,9 +40,6 @@ namespace BL_verksamhetsLager
         // CREATE
         public async Task<string?> SkapaPodcastAsync(Podcast podcast)
         {
-            if (podcast == null)
-                return "Ogiltig podcast.";
-
             if (string.IsNullOrWhiteSpace(podcast.Namn))
                 return "Podcast måste ha ett namn.";
 
@@ -52,7 +49,16 @@ namespace BL_verksamhetsLager
             if (string.IsNullOrWhiteSpace(podcast.KategoriId))
                 return "Podcast måste tillhöra en kategori.";
 
-            podcast.Avsnitt ??= new List<Avsnitt>();
+            var alla = await repository.GetAllAsync();
+            if (alla.Any(p =>
+                p.Url.Equals(podcast.Url, StringComparison.OrdinalIgnoreCase)
+                && p.KategoriId == podcast.KategoriId))
+            {
+                return "Denna podcast finns redan i denna kategori.";
+            }
+
+            if (podcast.Avsnitt == null)
+                podcast.Avsnitt = new List<Avsnitt>();
 
             await repository.AddAsync(podcast);
             return null;
