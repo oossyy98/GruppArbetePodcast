@@ -442,6 +442,7 @@ namespace PL_presentationsLager
             if (string.IsNullOrWhiteSpace(url))
             {
                 txtPodcastNamn.Clear();
+                lstAvsnitt.DataSource = null;   // rensa avsnitt också
                 return;
             }
 
@@ -452,21 +453,32 @@ namespace PL_presentationsLager
 
             try
             {
+                // Hämta titel från RSS
                 var namn = await rssService.HamtaPodcastTitelFranRssAsync(url);
+
                 if (namn != null)
                 {
                     txtPodcastNamn.Text = namn;
+
+                    // ? HÄMTA OCH VISA AVSNITT — DETTA VAR DET DU SAKNADE ?
+                    var avsnitt = await rssService.HamtaAvsnittFranRssAsync(url);
+                    lstAvsnitt.DataSource = null;
+                    lstAvsnitt.DataSource = avsnitt;
+                    lstAvsnitt.DisplayMember = "Titel";
                 }
                 else
                 {
                     txtPodcastNamn.Clear();
+                    lstAvsnitt.DataSource = null;
                 }
             }
             catch
             {
                 txtPodcastNamn.Clear();
+                lstAvsnitt.DataSource = null;
             }
         }
+
 
         private void txtPodcastNamn_TextChanged(object sender, EventArgs e)
         {

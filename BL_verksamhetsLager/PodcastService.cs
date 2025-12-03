@@ -92,7 +92,13 @@ namespace BL_verksamhetsLager
             if (befintlig == null)
                 return "Podcasten finns inte.";
 
-            var lyckades = await repository.UpdateAsync(podcast);
+            // Uppdatera alla fält
+            befintlig.Namn = podcast.Namn;
+            befintlig.Url = podcast.Url;
+            befintlig.KategoriId = podcast.KategoriId;
+            befintlig.Avsnitt = podcast.Avsnitt;
+
+            var lyckades = await repository.UpdateAsync(befintlig);
             if (!lyckades)
                 return "Kunde inte uppdatera podcasten.";
 
